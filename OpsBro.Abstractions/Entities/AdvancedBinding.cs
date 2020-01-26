@@ -1,6 +1,6 @@
 ﻿namespace OpsBro.Abstractions.Entities
 {
-    public class AdvancedBinding : BasicBinding
+    public class SelectionBinding : BasicBinding
     {
         public string Selector { get; set; }
     }

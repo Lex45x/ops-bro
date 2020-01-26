@@ -14,7 +14,7 @@ namespace OpsBro.Domain.Settings
         {
             var url = Environment.GetEnvironmentVariable("JSON_FILE_URL");
             var httpClient = new HttpClient();
-            httpClient
+            Initialization = httpClient
                 .GetStringAsync(url)
                 .ContinueWith(task => OnFileDownloaded(task, httpClient));
         }
@@ -29,7 +29,7 @@ namespace OpsBro.Domain.Settings
             EventDefinitions = root["eventDefinitions"].ToObject<List<EventDefinition>>();
         }
 
-
+        public Task Initialization { get; }
         public ICollection<Listener> Listeners { get; private set; }
         public ICollection<EventDefinition> EventDefinitions { get; private set; }
     }

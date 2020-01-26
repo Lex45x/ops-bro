@@ -6,7 +6,7 @@ namespace OpsBro.Abstractions.Entities
     {
         public string Name { get; set; }
         public string Event { get; set; }
-        public ICollection<AdvancedBinding> Bindings { get; set; }
+        public ICollection<BasicBinding> Bindings { get; set; }
         public ICollection<Validator> Validators { get; set; }
     }
 }

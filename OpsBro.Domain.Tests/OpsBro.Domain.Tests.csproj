@@ -16,9 +16,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OpsBro.Abstractions\OpsBro.Abstractions.csproj" />
-    <ProjectReference Include="..\OpsBro.Domain\OpsBro.Domain.csproj" />
-  </ItemGroup>
-
 </Project>

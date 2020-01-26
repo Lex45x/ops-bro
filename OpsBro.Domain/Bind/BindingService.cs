@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
-using OpsBro.Abstractions.Bind;
+using OpsBro.Abstractions.Binding;
 using OpsBro.Abstractions.Entities;
+using OpsBro.Abstractions.ValueObjects;
 
 namespace OpsBro.Domain.Bind
 {
-    public class BindingService : IBindingService
+    public class JsonBindingService : IJsonBindingService
     {
         public IEnumerable<Event> Bind(Listener listener, JObject jObject)
         {

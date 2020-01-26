@@ -35,15 +35,15 @@ namespace OpsBro.Domain.Tests
                             Value = new JValue(75)
                         }
                     },
-                    Bindings = new List<AdvancedBinding>
+                    Bindings = new List<SelectionBinding>
                     {
-                        new AdvancedBinding
+                        new SelectionBinding
                         {
                             Path = "some_url",
                             Property = "avatar",
                             Selector = "[a-z]{1,6}"
                         },
-                        new AdvancedBinding
+                        new SelectionBinding
                         {
                             Path = "extra_value",
                             Property = "age"

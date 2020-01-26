@@ -13,6 +13,7 @@ using OpsBro.Abstractions.Entities;
 
 namespace OpsBro.Domain.EventSubscribers
 {
+    //todo: must be as a separate service
     public class GenericEventSubscriber : EventSubscriber<GenericEvent>
     {
         private readonly IGenericLogger<GenericEventSubscriber> logger;
