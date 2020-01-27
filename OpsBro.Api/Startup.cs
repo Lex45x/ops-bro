@@ -1,102 +1,74 @@
-﻿using OpsBro.Api.Swagger;
-using OpsBro.Domain;
+﻿using System;
+using System.Net.Http;
+using System.Reflection;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
+using OpsBro.Domain.Settings;
 
 namespace OpsBro.Api
 {
     public class Startup
     {
-        private readonly IHostingEnvironment environment;
-
-        public Startup(IHostingEnvironment environment)
-        {
-            this.environment = environment;
-        }
+        private static string _corsPolicyName;
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options =>
-            {
-                options.Filters.Add<ExceptionFilter>();
-                options.Filters.Add<RequestLoggingFilter>();
+            services.AddMvc()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
-            }).AddJsonOptions(options =>
-            {
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-            });
-
+            _corsPolicyName = "AllowAll";
             services.AddCors(options =>
-                options.AddPolicy("AllowAll",
+                options.AddPolicy(_corsPolicyName,
                     policyBuilder => policyBuilder
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowAnyOrigin()
-                        .AllowCredentials()));
-
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAll"));
-            });
+                        .AllowAnyOrigin()));
 
             services.AddSwaggerGen(options =>
             {
-                options.CustomSchemaIds(type => type.FriendlyId(true));
-
-                options.TagActionsBy(description =>
-                    description.ControllerAttributes()
-                        .OfType<ControllerNameAttribute>()
-                        .FirstOrDefault()?.Name);
-                
-                options.SchemaFilter<ReadonlyFilter>();
-
-                options.DescribeAllEnumsAsStrings();
-
-                options.OrderActionsBy(description =>
-                    description.ControllerAttributes()
-                        .OfType<ControllerNameAttribute>()
-                        .FirstOrDefault()
-                        ?.Name);
-
-                options.SwaggerDoc("v1", new Info { Title = "PowerBinder API", Version = "v1" });
+                options.SwaggerDoc("v0.1", new OpenApiInfo
+                {
+                    Contact = new OpenApiContact
+                    {
+                        Name = "GitHub Repo",
+                        Url = new Uri("https://github.com/Lex45x/ops-bro")
+                    },
+                    Version = "v0.1",
+                    Title = "ops-bro"
+                });
             });
 
+            var settings = new Settings();
+            services.AddSingleton<ISettings>(settings);
 
-            var builder = new ContainerBuilder();
-
-            builder.RegisterInstance(environment)
-                .ExternallyOwned();
-
-            builder.Populate(services);
-
-            builder.RegisterModule(new ConfigurationModule(Assembly.GetExecutingAssembly()));
-            builder.RegisterModule<Log4NetModule>();
-            builder.RegisterModule<LoggingMiddlewareModule>();
-            builder.RegisterModule<ExceptionsModule>();
-            builder.RegisterModule<DomainModule>();
-            builder.RegisterModule<AutofacApplicationModule>();
-            builder.RegisterModule<CryptographyModule>();
-            builder.RegisterModule<ReCaptchaCoreModule>();
-            builder.RegisterType<HttpClient>()
-                .AsSelf();
-
-            var context = builder.Build();
-            
-            return new AutofacServiceProvider(context);
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseSwagger();
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "ComfortCity.Api");
+                options.SwaggerEndpoint("/swagger/v0.1/swagger.json", "OpsBro.Api");
+                options.RoutePrefix = string.Empty;
             });
 
-            app.UseCors("AllowAll");
-
-            app.UseMvc();
+            app.UseCors(_corsPolicyName);
+            app.UseRouting();
+            app.UseEndpoints(builder => builder.MapControllers());
         }
     }
 }

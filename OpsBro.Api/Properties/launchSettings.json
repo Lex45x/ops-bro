@@ -8,23 +8,12 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-        "environmentVariables": {
-            "HOSTING_ENVIRONMENT": "Development",
-            "JSON_FILE_URL": "https://gitlab.adraba.io/api/v4/projects/23/repository/files/gitlab2jira.json/raw?ref=master&private_token=Km9S6mMB6yovyeDqC_xi"
-        }
-    },
-    "PowerBinder.Api": {
+    "OpsBro.Api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "/swagger",
-        "environmentVariables": {
-            "HOSTING_ENVIRONMENT": "Development",
-            "JSON_FILE_URL": "https://gitlab.adraba.io/api/v4/projects/23/repository/files/gitlab2jira.json/raw?ref=master&private_token=Km9S6mMB6yovyeDqC_xi"
-        },
-      "applicationUrl": "http://localhost:52806"
+      "environmentVariables": {
+        "JSON_FILE_URL": "g2j.json"
+      }
     }
   }
 }

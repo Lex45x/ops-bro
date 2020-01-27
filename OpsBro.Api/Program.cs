@@ -1,4 +1,7 @@
-﻿namespace OpsBro.Api
+﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+
+namespace OpsBro.Api
 {
     public class Program
     {

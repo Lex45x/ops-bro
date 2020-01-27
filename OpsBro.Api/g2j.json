@@ -1,0 +1,452 @@
+{
+  "eventDispatchers": [
+    {
+      "eventName": "take_in_progress",
+      "schema": {
+        "$id": "http: //example.com/example.json",
+        "type": "object",
+        "properties": {
+          "issue": {
+            "$id": "/properties/issue",
+            "type": "string",
+            "title": "TheIssueSchema",
+            "default": "",
+            "examples": ["SH-123"]
+          },
+          "author": {
+            "$id": "/properties/author",
+            "type": "string",
+            "title": "TheAuthorSchema",
+            "default": "",
+            "examples": ["alex.redka"]
+          },
+          "ref": {
+            "$id": "/properties/ref",
+            "type": "string",
+            "title": "TheRefSchema",
+            "default": "",
+            "examples": ["refs/heads/develo"]
+          }
+        },
+        "required": ["issue", "author", "ref"]
+      },
+      "subscribers": [
+        {
+          "urlTemplate": "https://*.atlassian.net/rest/api/2/issue/{ISSUE}/transitions",
+          "method": "POST",
+          "bodyTemplate": {
+            "update": {
+              "comment": [
+                {
+                  "add": {
+                    "body": "Task taken in progress"
+                  }
+                }
+              ]
+            },
+            "fields": {
+              "assignee": {
+                "name": "{AUTHOR}"
+              },
+              "customfield_10035": "{REF}"
+            },
+            "transition": {
+              "id": "21"
+            }
+          },
+          "bodyTemplateRules": [
+            {
+              "token": "fields.assignee.name",
+              "property": "event.author"
+            },
+            {
+              "token": "fields.customfield_10035",
+              "property": "event.ref"
+            }
+          ],
+          "headerTemplateRules": [
+            {
+              "token": "Authorization",
+              "property": "meta.auth_header"
+            }
+          ],
+          "urlTemplateRules": [
+            {
+              "token": "{ISSUE}",
+              "property": "event.issue"
+            }
+          ],
+          "metadata": {
+            "auth_header": "Basic ="
+          }
+        }
+      ]
+    },
+    {
+      "eventName": "complete_task",
+      "schema": {
+        "$id": "http://example.com/example.json",
+        "type": "object",
+        "properties": {
+          "issue": {
+            "$id": "/properties/issue",
+            "type": "string",
+            "title": "The Issue Schema ",
+            "default": "",
+            "examples": [ "" ]
+          },
+          "url": {
+            "$id": "/properties/url",
+            "type": "string",
+            "title": "The Url Schema ",
+            "default": "",
+            "examples": [ "" ]
+          }
+        },
+        "required": [ "issue", "url" ]
+      },
+      "subscribers": [
+        {
+          "urlTemplate": "https://*.atlassian.net/rest/api/2/issue/{ISSUE}/transitions",
+          "method": "POST",
+          "bodyTemplate": {
+            "update": {
+              "comment": [
+                {
+                  "add": {
+                    "body": "Pull request created"
+                  }
+                }
+              ]
+            },
+            "fields": {
+              "customfield_10031": "{URL}"
+            },
+            "transition": {
+              "id": "31"
+            }
+          },
+          "bodyTemplateRules": [
+            {
+              "token": "fields.customfield_10031",
+              "property": "event.url"
+            }
+          ],
+          "headerTemplateRules": [
+            {
+              "token": "Authorization",
+              "property": "meta.auth_header"
+            }
+          ],
+          "urlTemplateRules": [
+            {
+              "token": "{ISSUE}",
+              "property": "event.issue"
+            }
+          ],
+          "metadata": {
+            "auth_header": "Basic ="
+          }
+        }
+      ]
+    },
+    {
+      "eventName": "task_work_in_progress",
+      "schema": {
+        "$id": "http://example.com/example.json",
+        "type": "object",
+        "properties": {
+          "issue": {
+            "$id": "/properties/issue",
+            "type": "string",
+            "title": "The Issue Schema ",
+            "default": "",
+            "examples": [ "" ]
+          }
+        },
+        "required": [ "issue" ]
+      },
+      "subscribers": [
+        {
+          "urlTemplate": "https://*.atlassian.net/rest/api/2/issue/{ISSUE}/transitions",
+          "method": "POST",
+          "bodyTemplate": {
+            "update": {
+              "comment": [
+                {
+                  "add": {
+                    "body": "Pull request become WIP!"
+                  }
+                }
+              ]
+            },
+            "transition": {
+              "id": "111"
+            }
+          },
+          "bodyTemplateRules": [],
+          "headerTemplateRules": [
+            {
+              "token": "Authorization",
+              "property": "meta.auth_header"
+            }
+          ],
+          "urlTemplateRules": [
+            {
+              "token": "{ISSUE}",
+              "property": "event.issue"
+            }
+          ],
+          "metadata": {
+            "auth_header": "Basic ="
+          }
+        }
+      ]
+    },
+    {
+      "eventName": "merge_task",
+      "schema": {
+        "$id": "http://example.com/example.json",
+        "type": "object",
+        "properties": {
+          "issue": {
+            "$id": "/properties/issue",
+            "type": "string",
+            "title": "The Issue Schema ",
+            "default": "",
+            "examples": [ "" ]
+          }
+        },
+        "required": [ "issue" ]
+      },
+      "subscribers": [
+        {
+          "urlTemplate": "https://*.atlassian.net/rest/api/2/issue/{ISSUE}/transitions",
+          "method": "POST",
+          "bodyTemplate": {
+            "update": {
+              "comment": [
+                {
+                  "add": {
+                    "body": "Pull request merged!"
+                  }
+                }
+              ]
+            },
+            "transition": {
+              "id": "51"
+            }
+          },
+          "bodyTemplateRules": [],
+          "headerTemplateRules": [
+            {
+              "token": "Authorization",
+              "property": "meta.auth_header"
+            }
+          ],
+          "urlTemplateRules": [
+            {
+              "token": "{ISSUE}",
+              "property": "event.issue"
+            }
+          ],
+          "metadata": {
+            "auth_header": "Basic ="
+          }
+        }
+      ]
+    }
+  ],
+  "listeners": [
+    {
+      "name": "gitlab",
+      "extractors": [
+        {
+          "name": "push",
+          "event": "take_in_progress",
+          "extractionRules": [
+            {
+              "type": "FirstRegexMatch",
+              "pattern": "[A-Z]{1,10}-\\d{1,10}",
+              "path": "body.ref",
+              "property": "issue"
+            },
+            {
+              "type": "Copy",
+              "path": "body.user_username",
+              "property": "author"
+            },
+            {
+              "type": "Copy",
+              "path": "body.ref",
+              "property": "ref"
+            }
+          ],
+          "validationRules": [
+            {
+              "path": "headers.X-Gitlab-Token[0]",
+              "value": "",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_kind",
+              "value": "push",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.checkout_sha",
+              "value": null,
+              "operator": "NotEquals"
+            }
+          ]
+        },
+        {
+          "name": "merge_request_created",
+          "event": "complete_task",
+          "extractionRules": [
+            {
+              "type": "FirstRegexMatch",
+              "pattern": "[A-Z]{1,10}-\\d{1,10}",
+              "path": "body.object_attributes.source_branch",
+              "property": "issue"
+            },
+            {
+              "type": "Copy",
+              "path": "body.object_attributes.url",
+              "property": "url"
+            }
+          ],
+          "validationRules": [
+            {
+              "path": "headers.X-Gitlab-Token[0]",
+              "value": "",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_kind",
+              "value": "merge_request",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_attributes.action",
+              "value": "open",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_attributes.work_in_progress",
+              "value": false,
+              "operator": "Equals"
+            }
+          ]
+        },
+        {
+          "name": "merge_request_completed",
+          "event": "complete_task",
+          "extractionRules": [
+            {
+              "type": "FirstRegexMatch",
+              "pattern": "[A-Z]{1,10}-\\d{1,10}",
+              "path": "body.object_attributes.source_branch",
+              "property": "issue"
+            },
+            {
+              "type": "Copy",
+              "path": "body.object_attributes.url",
+              "property": "url"
+            }
+          ],
+          "validationRules": [
+            {
+              "path": "headers.X-Gitlab-Token[0]",
+              "value": "",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_kind",
+              "value": "merge_request",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_attributes.action",
+              "value": "update",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_attributes.work_in_progress",
+              "value": false,
+              "operator": "Equals"
+            }
+          ]
+        },
+        {
+          "name": "merge_request_take_in_progress",
+          "event": "task_work_in_progress",
+          "extractionRules": [
+            {
+              "type": "FirstRegexMatch",
+              "pattern": "[A-Z]{1,10}-\\d{1,10}",
+              "path": "body.object_attributes.source_branch",
+              "property": "issue"
+            },
+            {
+              "type": "Copy",
+              "path": "body.object_attributes.url",
+              "property": "url"
+            }
+          ],
+          "validationRules": [
+            {
+              "path": "headers.X-Gitlab-Token[0]",
+              "value": "",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_kind",
+              "value": "merge_request",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_attributes.action",
+              "value": "update",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_attributes.work_in_progress",
+              "value": true,
+              "operator": "Equals"
+            }
+          ]
+        },
+        {
+          "name": "merge_request_merged",
+          "event": "merge_task",
+          "extractionRules": [
+            {
+              "type": "FirstRegexMatch",
+              "pattern": "[A-Z]{1,10}-\\d{1,10}",
+              "path": "body.object_attributes.source_branch",
+              "property": "issue"
+            }
+          ],
+          "validationRules": [
+            {
+              "path": "headers.X-Gitlab-Token[0]",
+              "value": "",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_kind",
+              "value": "merge_request",
+              "operator": "Equals"
+            },
+            {
+              "path": "body.object_attributes.action",
+              "value": "merge",
+              "operator": "Equals"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

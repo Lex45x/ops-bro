@@ -1,57 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using NUnit.Framework;
-using OpsBro.Abstractions.Contracts.Events;
-using OpsBro.Abstractions.Entities;
-using OpsBro.Domain.Bind;
-using OpsBro.Domain.EventSubscribers;
+using NUnit.Framework.Internal;
+using OpsBro.Domain.Entities;
+using OpsBro.Domain.Entities.Events;
+using OpsBro.Domain.Entities.Extraction;
+using OpsBro.Domain.Entities.Extraction.Rules;
 
 namespace OpsBro.Domain.Tests
 {
     [TestFixture]
     public class BindingServiceTest
     {
-        public Listener Listener => new Listener
-        {
-            Name = "test",
-            Binders = new List<Binder>
+        public Listener Listener { get; } =
+            new Listener("test", new List<Extractor>
             {
-                new Binder
+                new Extractor("first", "first event", new List<ExtractionRule>
                 {
-                    Name = "first",
-                    Event = "first_event",
-                    Validators = new List<Validator>
-                    {
-                        new Validator
-                        {
-                            Path = "key",
-                            Value = new JValue("superB")
-                        },
-                        new Validator
-                        {
-                            Path = "story.objective",
-                            Value = new JValue(75)
-                        }
-                    },
-                    Bindings = new List<SelectionBinding>
-                    {
-                        new SelectionBinding
-                        {
-                            Path = "some_url",
-                            Property = "avatar",
-                            Selector = "[a-z]{1,6}"
-                        },
-                        new SelectionBinding
-                        {
-                            Path = "extra_value",
-                            Property = "age"
-                        }
-                    }
-                }
-            }
-        };
+                    new FirstRegexMatchExtractorRule("some_url", "avatar", "[a-z]{1,6}"),
+                    new CopyExtractionRule("extra_value", "age")
+                }, new List<ValidationRule>
+                {
+                    new ValidationRule("key", new JValue("superB"), ValidationOperator.Equals),
+                    new ValidationRule("story.objective", new JValue(75), ValidationOperator.Equals)
+                })
+            });
 
         public JObject Data => new JObject
         {
@@ -64,79 +42,44 @@ namespace OpsBro.Domain.Tests
             ["extra_value"] = 13
         };
 
-        public ICollection<EventDefinition> EventDefinitions => new List<EventDefinition>
-        {
-            new EventDefinition
-            {
-                Name = "first_event",
-                Schema =
-                    "{\"$id\":\"http://example.com/example.json\",\"type\":\"object\",\"properties\":{\"avatar\":{\"$id\":\"/properties/avatar\",\"type\":\"string\",\"title\":\"The Avatar Schema \",\"default\":\"\",\"examples\":[\"asd\"]},\"age\":{\"$id\":\"/properties/age\",\"type\":\"integer\",\"title\":\"The Age Schema \",\"default\":0,\"examples\":[12]}},\"required\":[\"avatar\",\"age\"]}",
-                Subscribers = new List<EventSubscriber>
-                {
-                    new EventSubscriber
-                    {
-                        Metadata = new JObject
-                        {
-                            ["api_key"] = "supervalue"
-                        },
-                        UrlTemplate = "http://requestbin.fullcontact.com/13ci09q1/{age}",
-                        UrlBindings = new List<BasicBinding>
-                        {
-                            new BasicBinding
-                            {
-                                Path = "{age}",
-                                Property = "data.age"
-                            }
-                        },
-                        Method = "POST",
-                        BodyTemplate = new JObject
-                        {
-                            ["hardcoded"] = "value",
-                            ["data-template"] = "",
-                            ["meta-template"] = ""
-                        },
-                        BodyBindings = new List<BasicBinding>
-                        {
-                            new BasicBinding
-                            {
-                                Path = "data-template",
-                                Property = "data.avatar"
-                            },
-                            new BasicBinding
-                            {
-                                Path = "meta-template",
-                                Property = "meta.api_key"
-                            }
-                        },
-                        HeaderBindings = new List<BasicBinding>
-                        {
-                            new BasicBinding
-                            {
-                                Path = "Authorization",
-                                Property = "meta.api_key"
-                            }
-                        }
-                    }
-                }
-            }
-        };
 
-        [Test]
+        public EventDispatcher Dispatcher = new EventDispatcher("first_event",
+            JSchema.Parse(
+                "{\"$id\":\"http://example.com/example.json\",\"type\":\"object\",\"properties\":{\"avatar\":{\"$id\":\"/properties/avatar\",\"type\":\"string\",\"title\":\"The Avatar Schema \",\"default\":\"\",\"examples\":[\"asd\"]},\"age\":{\"$id\":\"/properties/age\",\"type\":\"integer\",\"title\":\"The Age Schema \",\"default\":0,\"examples\":[12]}},\"required\":[\"avatar\",\"age\"]}"),
+            new List<EventSubscriber>
+            {
+                new EventSubscriber("http://requestbin.fullcontact.com/13ci09q1/{age}",
+                    HttpMethod.Post,
+                    new JObject
+                    {
+                        ["hardcoded"] = "value",
+                        ["data-template"] = "",
+                        ["meta-template"] = ""
+                    },
+                    new List<TemplateRule>
+                    {
+                        new TemplateRule("data-template", "event.avatar"),
+                        new TemplateRule("meta-template", "meta.api_key")
+                    },
+                    new List<TemplateRule>
+                    {
+                        new TemplateRule("Authorization", "meta.api_key")
+                    },
+                    new List<TemplateRule>
+                    {
+                        new TemplateRule("{age}", "data.age")
+                    }, new JObject
+                    {
+                        ["api_key"] = "supervalue"
+                    }
+                )
+            });
+
         public async Task Test()
         {
-            var bindingService = new BindingService();
-
-            var events = bindingService.Bind(Listener, Data).ToList();
-
-            var subscriber = new GenericEventSubscriber();
-
-            foreach (var @event in events)
+            foreach (var @event in Listener.ExtractAll(Data))
             {
-                await subscriber.OnEvent(new GenericEvent
-                {
-                    Event = @event,
-                    Definition = EventDefinitions.FirstOrDefault(definition => definition.Name == @event.Name)
-                });
+                await Dispatcher.Dispatch(@event);
             }
         }
     }

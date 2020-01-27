@@ -7,12 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="abioc" Version="0.8.0" />
+    <PackageReference Include="FluentValidation" Version="8.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.11" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OpsBro.Abstractions\OpsBro.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

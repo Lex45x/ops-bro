@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace OpsBro.Abstractions.ValueObjects
+namespace OpsBro.Domain.ValueObjects
 {
     public class Event : IEquatable<Event>
     {

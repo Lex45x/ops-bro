@@ -16,4 +16,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OpsBro.Domain\OpsBro.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

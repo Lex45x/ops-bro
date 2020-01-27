@@ -1,144 +1,54 @@
-﻿using OpsBro.Abstractions.Bind;
-using OpsBro.Abstractions.Contracts.Events;
-using OpsBro.Abstractions.Settings;
+﻿using System;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OpsBro.Domain.Settings;
 
 namespace OpsBro.Api.Controllers
 {
-    [ControllerName("Listener")]
-    [Route("api/{listener}")]
-    public class ListenerController : Controller, ITrigger<GenericEvent>
+    [Route("api/{listenerName}")]
+    public class ListenerController : ControllerBase
     {
-        private readonly IBindingService bindingService;
-        private readonly IEventBus eventBus;
-        private readonly IQueryBus queryBus;
-        private readonly ISettingsSource settings;
-        private readonly IGenericLogger<ListenerController> logger;
+        private readonly ISettings settings;
 
-        public ListenerController(IBindingService bindingService, IEventBus eventBus, IQueryBus queryBus,
-            ISettingsSource settings, IGenericLogger<ListenerController> logger)
+        public ListenerController(ISettings settings)
         {
-            this.bindingService = bindingService;
-            this.eventBus = eventBus;
-            this.queryBus = queryBus;
             this.settings = settings;
-            this.logger = logger;
         }
 
         [HttpPost]
-        public async Task Call([FromRoute] string listener, [FromBody] JObject body)
+        public async Task Call([FromRoute] string listenerName, [FromBody] JObject body, [FromQuery] JObject query)
         {
-            listener = Uri.UnescapeDataString(listener);
-
-            if (logger.IsDebugEnabled)
-            {
-                logger.Debug(new JObject
-                {
-                    ["Step"] = "Beginning",
-                    ["NextStep"] = "Find customer",
-                    ["Listener"] = listener,
-                    ["RequestBody"] = body,
-                    ["RequestId"] = Request.HttpContext.TraceIdentifier
-                });
-            }
-            
-            if (logger.IsDebugEnabled)
-            {
-                logger.Debug(new JObject
-                {
-                    ["Step"] = "Find customer",
-                    ["NextStep"] = "Find listener",
-                    ["RequestId"] = Request.HttpContext.TraceIdentifier
-                });
-            }
-
-            var listeners = settings.Listeners.First(customerListener => customerListener.Name == listener);
-
-            if (logger.IsDebugEnabled)
-            {
-                logger.Debug(new JObject
-                {
-                    ["Step"] = "Find listener",
-                    ["NextStep"] = "Create payload",
-                    ["RequestId"] = Request.HttpContext.TraceIdentifier
-                });
-            }
+            listenerName = Uri.UnescapeDataString(listenerName);
+            var listener = settings.Listeners.First(customerListener => customerListener.Name == listenerName);
 
             var payload = new JObject
             {
+                ["query"] = query,
                 ["body"] = body,
+                //issue: Asp.Net core store all unknown headers in lowercase, so it's unable to retrieve original case of the header
                 ["headers"] = JToken.FromObject(Request.Headers)
             };
-
-            if (logger.IsDebugEnabled)
+            
+            foreach (var @event in listener.ExtractAll(payload))
             {
-                logger.Debug(new JObject
-                {
-                    ["Step"] = "Create payload",
-                    ["NextStep"] = "Execute binding",
-                    ["RequestId"] = Request.HttpContext.TraceIdentifier,
-                    ["Payload"] = payload
-                });
-            }
+                var eventDispatcher =
+                    settings.EventDispatchers.FirstOrDefault(dispatcher => dispatcher.EventName == @event.Name);
 
-            var events = bindingService.Bind(listeners, payload);
-
-            if (logger.IsDebugEnabled)
-            {
-                logger.Debug(new JObject
+                if (eventDispatcher == null)
                 {
-                    ["Step"] = "Execute binding",
-                    ["NextStep"] = "::LOOP for Events",
-                    ["RequestId"] = Request.HttpContext.TraceIdentifier,
-                    ["Events"] = JToken.FromObject(events)
-                });
-            }
-
-            foreach (var @event in events)
-            {
-                if (logger.IsDebugEnabled)
-                {
-                    logger.Debug(new JObject
-                    {
-                        ["Step"] = "Process event::BEGIN_ITERATION",
-                        ["NextStep"] = "Find event definition",
-                        ["RequestId"] = Request.HttpContext.TraceIdentifier,
-                        ["Event"] = JToken.FromObject(@event)
-                    });
+                    continue;
                 }
 
-                var eventDefinition =
-                    settings.EventDefinitions.FirstOrDefault(definition => definition.Name == @event.Name);
-
-                if (logger.IsDebugEnabled)
-                {
-                    logger.Debug(new JObject
-                    {
-                        ["Step"] = "Find event definition",
-                        ["NextStep"] = "Raise event",
-                        ["RequestId"] = Request.HttpContext.TraceIdentifier,
-                        ["EventDefinition"] = JToken.FromObject(eventDefinition)
-                    });
-                }
-
-                var customerEvent = new GenericEvent
-                {
-                    Event = @event,
-                    Definition = eventDefinition
-                };
-
-                await eventBus.Raise(this, customerEvent);
-
-                if (logger.IsDebugEnabled)
-                {
-                    logger.Debug(new JObject
-                    {
-                        ["Step"] = "Raise event",
-                        ["NextStep"] = "::END_ITERATION",
-                        ["RequestId"] = Request.HttpContext.TraceIdentifier,
-                        ["Event"] = JToken.FromObject(@events)
-                    });
-                }
+                await eventDispatcher.Dispatch(@event);
             }
         }
+
+        
     }
 }
