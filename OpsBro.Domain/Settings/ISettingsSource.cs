@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using OpsBro.Domain.Entities;
-using OpsBro.Domain.Entities.Events;
+using OpsBro.Domain.Events;
+using OpsBro.Domain.Extraction;
 
 namespace OpsBro.Domain.Settings
 {

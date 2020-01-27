@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using OpsBro.Domain.Entities.Extraction;
-using OpsBro.Domain.ValueObjects;
+using OpsBro.Domain.Events;
 
-namespace OpsBro.Domain.Entities
+namespace OpsBro.Domain.Extraction
 {
     /// <summary>
     /// Represent an entry-point for extraction process

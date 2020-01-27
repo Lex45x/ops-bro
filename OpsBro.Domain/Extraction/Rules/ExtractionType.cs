@@ -1,4 +1,4 @@
-﻿namespace OpsBro.Domain.Entities.Extraction.Rules
+﻿namespace OpsBro.Domain.Extraction.Rules
 {
     /// <summary>
     /// Specify a way to extract a single event property from the request

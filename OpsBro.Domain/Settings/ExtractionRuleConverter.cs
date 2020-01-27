@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using OpsBro.Domain.Entities.Extraction.Rules;
+using OpsBro.Domain.Extraction.Rules;
 
 namespace OpsBro.Domain.Settings
 {

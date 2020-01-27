@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Schema;
-using OpsBro.Domain.ValueObjects;
 
-namespace OpsBro.Domain.Entities.Events
+namespace OpsBro.Domain.Events
 {
     /// <summary>
     /// Handle and validate an extracted event.

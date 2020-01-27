@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.ComponentModel;
 using Newtonsoft.Json.Linq;
-using OpsBro.Domain.Settings;
 
-namespace OpsBro.Domain.Entities.Extraction.Rules
+namespace OpsBro.Domain.Extraction.Rules
 {
     /// <summary>
     ///  Base class for all extraction rules
@@ -11,11 +11,19 @@ namespace OpsBro.Domain.Entities.Extraction.Rules
     {
         protected ExtractionRule(ExtractionType type, string path, string property)
         {
+            if (!Enum.IsDefined(typeof(ExtractionType), type))
+            {
+                throw new InvalidEnumArgumentException(nameof(type), (int) type, typeof(ExtractionType));
+            }
+
             Type = type;
-            Path = path;
-            Property = property;
+            Path = path ?? throw new ArgumentNullException(nameof(path));
+            Property = property ?? throw new ArgumentNullException(nameof(property));
         }
 
+        /// <summary>
+        /// Type of extraction.
+        /// </summary>
         public ExtractionType Type { get; }
 
         /// <summary>

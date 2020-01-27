@@ -6,9 +6,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OpsBro.Domain.ValueObjects;
 
-namespace OpsBro.Domain.Entities.Events
+namespace OpsBro.Domain.Events
 {
     /// <summary>
     /// Sends and HTTP request once event has been dispatched

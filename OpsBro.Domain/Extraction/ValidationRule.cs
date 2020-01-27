@@ -1,4 +1,4 @@
-﻿namespace OpsBro.Domain.Entities.Extraction
+﻿namespace OpsBro.Domain.Extraction
 {
     public class ValidationRule
     {

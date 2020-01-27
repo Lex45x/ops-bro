@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using OpsBro.Domain.Entities;
-using OpsBro.Domain.Entities.Events;
+using OpsBro.Domain.Events;
+using OpsBro.Domain.Extraction;
 
 namespace OpsBro.Domain.Settings
 {

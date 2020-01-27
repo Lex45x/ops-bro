@@ -4,10 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentValidation;
 using Newtonsoft.Json.Linq;
-using OpsBro.Domain.Entities.Extraction.Rules;
-using OpsBro.Domain.ValueObjects;
+using OpsBro.Domain.Events;
+using OpsBro.Domain.Extraction.Rules;
 
-namespace OpsBro.Domain.Entities.Extraction
+namespace OpsBro.Domain.Extraction
 {
     /// <summary>
     /// Define rules to extract an event from payload

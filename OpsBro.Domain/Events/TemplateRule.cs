@@ -1,4 +1,4 @@
-﻿namespace OpsBro.Domain.Entities.Events
+﻿namespace OpsBro.Domain.Events
 {
     /// <summary>
     /// Used to define template rules inside vent subscriber
