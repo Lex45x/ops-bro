@@ -263,7 +263,7 @@
       "extractors": [
         {
           "name": "push",
-          "event": "take_in_progress",
+          "eventName": "take_in_progress",
           "extractionRules": [
             {
               "type": "FirstRegexMatch",
@@ -302,7 +302,7 @@
         },
         {
           "name": "merge_request_created",
-          "event": "complete_task",
+          "eventName": "complete_task",
           "extractionRules": [
             {
               "type": "FirstRegexMatch",
@@ -341,7 +341,7 @@
         },
         {
           "name": "merge_request_completed",
-          "event": "complete_task",
+          "eventName": "complete_task",
           "extractionRules": [
             {
               "type": "FirstRegexMatch",
@@ -380,7 +380,7 @@
         },
         {
           "name": "merge_request_take_in_progress",
-          "event": "task_work_in_progress",
+          "eventName": "task_work_in_progress",
           "extractionRules": [
             {
               "type": "FirstRegexMatch",
@@ -419,7 +419,7 @@
         },
         {
           "name": "merge_request_merged",
-          "event": "merge_task",
+          "eventName": "merge_task",
           "extractionRules": [
             {
               "type": "FirstRegexMatch",

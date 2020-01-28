@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 
 namespace OpsBro.Domain.Extraction.Rules
@@ -42,6 +43,6 @@ namespace OpsBro.Domain.Extraction.Rules
         /// <param name="eventData">Data of the event being processing</param>
         /// <param name="payload">Json with value to be extracted</param>
         /// <returns>Modified <paramref name="eventData"/></returns>
-        public abstract JObject ApplyRule(JObject eventData, JObject payload);
+        public abstract JObject ApplyRule([NotNull] JObject eventData, [NotNull] JObject payload);
     }
 }

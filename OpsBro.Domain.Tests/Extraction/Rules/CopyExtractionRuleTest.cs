@@ -7,7 +7,7 @@ using OpsBro.Domain.Extraction.Rules;
 
 namespace OpsBro.Domain.Tests.Extraction.Rules
 {
-    [TestFixture(Author = "lex45x", Category = "Unit", TestOf = typeof(CopyExtractionRule))]
+    [TestFixture(Author = "lex45x", Category = "Unit,Domain", TestOf = typeof(CopyExtractionRule))]
     public class CopyExtractionRuleTest
     {
         public static readonly CopyExtractionRule Empty = new CopyExtractionRule("", "");
@@ -15,7 +15,7 @@ namespace OpsBro.Domain.Tests.Extraction.Rules
 
 
         [Test]
-        public void Constructor_EmptyRule_ArgumentValidation()
+        public void Constructor_ArgumentValidation()
         {
             Assert.Throws<ArgumentNullException>(() => new CopyExtractionRule(path: null, ""));
             Assert.Throws<ArgumentNullException>(() => new CopyExtractionRule("", property: null));

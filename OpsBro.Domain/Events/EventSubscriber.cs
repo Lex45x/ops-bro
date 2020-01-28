@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using OpsBro.Domain.Events.Templates;
 
 namespace OpsBro.Domain.Events
 {
@@ -19,13 +20,13 @@ namespace OpsBro.Domain.Events
             ICollection<TemplateRule> headerTemplateRules,
             ICollection<TemplateRule> urlTemplateRules, JObject metadata)
         {
-            UrlTemplate = urlTemplate;
-            Method = method;
-            BodyTemplate = bodyTemplate;
-            BodyTemplateRules = bodyTemplateRules;
-            HeaderTemplateRules = headerTemplateRules;
-            UrlTemplateRules = urlTemplateRules;
-            Metadata = metadata;
+            UrlTemplate = urlTemplate ?? throw new ArgumentNullException(nameof(urlTemplate));
+            Method = method ?? throw new ArgumentNullException(nameof(method));
+            BodyTemplate = bodyTemplate ?? throw new ArgumentNullException(nameof(bodyTemplate));
+            BodyTemplateRules = bodyTemplateRules ?? throw new ArgumentNullException(nameof(bodyTemplateRules));
+            HeaderTemplateRules = headerTemplateRules ?? throw new ArgumentNullException(nameof(headerTemplateRules));
+            UrlTemplateRules = urlTemplateRules ?? throw new ArgumentNullException(nameof(urlTemplateRules));
+            Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
         }
 
         /// <summary>
@@ -68,8 +69,13 @@ namespace OpsBro.Domain.Events
         /// </summary>
         /// <param name="extractedEvent"></param>
         /// <returns></returns>
-        public async Task Handle(Event extractedEvent)
+        public virtual async Task Handle(Event extractedEvent)
         {
+            if (extractedEvent == null)
+            {
+                throw new ArgumentNullException(nameof(extractedEvent));
+            }
+
             var model = new JObject
             {
                 ["event"] = extractedEvent.Data,
@@ -89,8 +95,8 @@ namespace OpsBro.Domain.Events
             ApplyHeaderTemplate(httpRequestMessage.Headers, model, HeaderTemplateRules);
 
             using var httpClient = new HttpClient();
-            var responseMessage = await httpClient.SendAsync(httpRequestMessage);
-            //todo: write response to logs
+            var responseMessage = await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
+            responseMessage.EnsureSuccessStatusCode();
         }
 
         private static string ApplyUrlTemplate(string url, JToken model, ICollection<TemplateRule> templateRules)

@@ -12,9 +12,9 @@ namespace OpsBro.Domain.Events
     {
         public EventDispatcher(string eventName, JSchema schema, ICollection<EventSubscriber> subscribers)
         {
-            EventName = eventName;
-            Schema = schema;
-            Subscribers = subscribers;
+            EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
+            Schema = schema ?? throw new ArgumentNullException(nameof(schema));
+            Subscribers = subscribers ?? throw new ArgumentNullException(nameof(subscribers));
         }
 
         /// <summary>
@@ -34,11 +34,17 @@ namespace OpsBro.Domain.Events
 
         /// <summary>
         /// Handle an event to underlying subscribers.
+        /// All subscribers exceptions will be suppressed.
         /// </summary>
         /// <param name="extractedEvent"></param>
         /// <returns></returns>
         public async Task Dispatch(Event extractedEvent)
         {
+            if (extractedEvent == null)
+            {
+                throw new ArgumentNullException(nameof(extractedEvent));
+            }
+
             if (!string.Equals(extractedEvent.Name, EventName, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
@@ -55,8 +61,8 @@ namespace OpsBro.Domain.Events
                 }
                 catch (Exception e)
                 {
+                    //todo: logs gonna here
                     Console.WriteLine(e);
-                    throw;
                 }
             }
         }

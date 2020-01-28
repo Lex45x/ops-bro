@@ -6,7 +6,7 @@ namespace OpsBro.Domain.Settings
 {
     public interface ISettings
     {
-        ICollection<Listener> Listeners { get; }
-        ICollection<EventDispatcher> EventDispatchers { get; }
+        IDictionary<string, Listener> ListenersByListenerName { get; }
+        IDictionary<string, EventDispatcher> EventDispatcherByEventName { get; }
     }
 }

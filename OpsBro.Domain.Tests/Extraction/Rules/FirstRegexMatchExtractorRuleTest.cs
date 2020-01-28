@@ -7,7 +7,7 @@ using OpsBro.Domain.Extraction.Rules;
 
 namespace OpsBro.Domain.Tests.Extraction.Rules
 {
-    [TestFixture(Author = "lex45x", Category = "Unit", TestOf = typeof(FirstRegexMatchExtractorRule))]
+    [TestFixture(Author = "lex45x", Category = "Unit,Domain", TestOf = typeof(FirstRegexMatchExtractorRule))]
     public class FirstRegexMatchExtractorRuleTest
     {
         public static readonly FirstRegexMatchExtractorRule Empty = new FirstRegexMatchExtractorRule("", "", "");
@@ -17,7 +17,7 @@ namespace OpsBro.Domain.Tests.Extraction.Rules
 
 
         [Test]
-        public void Constructor_EmptyRule_ArgumentValidation()
+        public void Constructor_ArgumentValidation()
         {
             Assert.Throws<ArgumentNullException>(() => new FirstRegexMatchExtractorRule(path: null, "", ""));
             Assert.Throws<ArgumentNullException>(() => new FirstRegexMatchExtractorRule("", property: null, ""));

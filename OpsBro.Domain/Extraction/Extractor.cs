@@ -14,17 +14,22 @@ namespace OpsBro.Domain.Extraction
     /// </summary>
     public class Extractor
     {
-        public Extractor(string name, string @event, ICollection<ExtractionRule> extractionRules,
+        public Extractor(string name, string eventName, ICollection<ExtractionRule> extractionRules,
             ICollection<ValidationRule> validationRules)
         {
-            Name = name;
-            Event = @event;
-            ExtractionRules = extractionRules;
-            ValidationRules = validationRules;
-            validator = CreateValidator();
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
+            ExtractionRules = extractionRules ?? throw new ArgumentNullException(nameof(extractionRules));
+            ValidationRules = validationRules ?? throw new ArgumentNullException(nameof(validationRules));
+            
+            Validator = CreateValidator();
         }
 
-        private InlineValidator<JObject> CreateValidator()
+        /// <summary>
+        /// Creates an <see cref="IValidator{T}"/> implementation based on <see cref="ValidationRules"/>
+        /// </summary>
+        /// <returns></returns>
+        private IValidator<JObject> CreateValidator()
         {
             var inlineValidator = new InlineValidator<JObject>
             {
@@ -43,7 +48,8 @@ namespace OpsBro.Domain.Extraction
                                 var tokensAreEqual = JToken.DeepEquals(token, comparisonValue);
 
                                 return tokensAreEqual;
-                            });
+                            })
+                            .WithName(validationRule.Path);
                         break;
                     case ValidationOperator.NotEquals:
                         inlineValidator.RuleFor(o => o.SelectToken(validationRule.Path))
@@ -53,7 +59,8 @@ namespace OpsBro.Domain.Extraction
                                 var tokensAreEqual = JToken.DeepEquals(token, comparisonValue);
 
                                 return !tokensAreEqual;
-                            });
+                            })
+                            .WithName(validationRule.Path);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -69,9 +76,9 @@ namespace OpsBro.Domain.Extraction
         public string Name { get; }
 
         /// <summary>
-        /// Event that will be extracted as a result
+        /// Name of Event that will be extracted as a result
         /// </summary>
-        public string Event { get; }
+        public string EventName { get; }
 
         /// <summary>
         /// Set of rules to extract an event
@@ -83,7 +90,7 @@ namespace OpsBro.Domain.Extraction
         /// </summary>
         public ICollection<ValidationRule> ValidationRules { get; }
 
-        private readonly IValidator<JObject> validator;
+        private IValidator<JObject> Validator { get; }
 
         /// <summary>
         /// Makes an attempt to extract event from payload
@@ -91,9 +98,14 @@ namespace OpsBro.Domain.Extraction
         /// <param name="payload">Payload to extract from</param>
         /// <param name="extractedEvent">Extracted event</param>
         /// <returns>Status of extraction. True when <paramref name="extractedEvent"/> created and initialized. </returns>
-        public bool TryExtract(JObject payload, [MaybeNullWhen(returnValue: false)] out Event extractedEvent)
+        public virtual bool TryExtract(JObject payload, [MaybeNullWhen(returnValue: false)] out Event extractedEvent)
         {
-            var validationResult = validator.Validate(payload);
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
+            var validationResult = Validator.Validate(payload);
 
             if (!validationResult.IsValid)
             {
@@ -104,11 +116,7 @@ namespace OpsBro.Domain.Extraction
             var eventData = ExtractionRules.Aggregate(new JObject(),
                 (current, extractionRule) => extractionRule.ApplyRule(current, payload));
 
-            extractedEvent = new Event
-            {
-                Data = eventData,
-                Name = Event
-            };
+            extractedEvent = new Event(EventName, eventData);
 
             return true;
         }

@@ -1,4 +1,4 @@
-﻿namespace OpsBro.Domain.Events
+﻿namespace OpsBro.Domain.Events.Templates
 {
     /// <summary>
     /// Used to define template rules inside vent subscriber
@@ -24,4 +24,5 @@
         /// </summary>
         public string Property { get; }
     }
+
 }

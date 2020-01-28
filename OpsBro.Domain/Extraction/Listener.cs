@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using OpsBro.Domain.Events;
 
@@ -16,8 +17,8 @@ namespace OpsBro.Domain.Extraction
 
         public Listener(string name, ICollection<Extractor> extractors)
         {
-            Name = name;
-            Extractors = extractors;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Extractors = extractors ?? throw new ArgumentNullException(nameof(extractors));
         }
 
         /// <summary>
@@ -32,6 +33,11 @@ namespace OpsBro.Domain.Extraction
         /// <returns>All extracted events</returns>
         public IEnumerable<Event> ExtractAll(JObject payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             foreach (var extractor in Extractors)
             {
                 if (extractor.TryExtract(payload, out var extractedEvent))

@@ -25,20 +25,18 @@ namespace OpsBro.Api.Controllers
         public async Task Call([FromRoute] string listenerName, [FromBody] JObject body, [FromQuery] JObject query)
         {
             listenerName = Uri.UnescapeDataString(listenerName);
-            var listener = settings.Listeners.First(customerListener => customerListener.Name == listenerName);
+            var listener = settings.ListenersByListenerName[listenerName];
 
             var payload = new JObject
             {
                 ["query"] = query,
                 ["body"] = body,
-                //issue: Asp.Net core store all unknown headers in lowercase, so it's unable to retrieve original case of the header
                 ["headers"] = JToken.FromObject(Request.Headers)
             };
-            
+
             foreach (var @event in listener.ExtractAll(payload))
             {
-                var eventDispatcher =
-                    settings.EventDispatchers.FirstOrDefault(dispatcher => dispatcher.EventName == @event.Name);
+                var eventDispatcher = settings.EventDispatcherByEventName[@event.Name];
 
                 if (eventDispatcher == null)
                 {
@@ -48,7 +46,5 @@ namespace OpsBro.Api.Controllers
                 await eventDispatcher.Dispatch(@event);
             }
         }
-
-        
     }
 }

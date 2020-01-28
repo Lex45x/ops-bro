@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,8 +42,13 @@ namespace OpsBro.Domain.Settings
         {
             var root = JObject.Parse(configuration);
 
-            Listeners = root["listeners"].ToObject<List<Listener>>(serializer);
-            EventDispatchers = root["eventDispatchers"].ToObject<List<EventDispatcher>>(serializer);
+            ListenersByListenerName = root["listeners"]
+                .ToObject<List<Listener>>(serializer)
+                .ToDictionary(listener => listener.Name);
+
+            EventDispatcherByEventName = root["eventDispatchers"]
+                .ToObject<List<EventDispatcher>>(serializer)
+                .ToDictionary(dispatcher => dispatcher.EventName);
         }
 
         private readonly JsonSerializer serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings
@@ -56,8 +62,8 @@ namespace OpsBro.Domain.Settings
         });
 
         public Task Initialization { get; }
-        public ICollection<Listener> Listeners { get; private set; }
-        public ICollection<EventDispatcher> EventDispatchers { get; private set; }
+        public IDictionary<string, Listener> ListenersByListenerName { get; private set; }
+        public IDictionary<string, EventDispatcher> EventDispatcherByEventName { get; private set; }
     }
 
     internal class HttpMethodStringConverter : JsonConverter
@@ -69,7 +75,8 @@ namespace OpsBro.Domain.Settings
             writer.WriteValue(httpMethod?.Method);
         }
 
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
+            JsonSerializer serializer)
         {
             var httpMethodString = reader.Value as string;
             return new HttpMethod(httpMethodString);
