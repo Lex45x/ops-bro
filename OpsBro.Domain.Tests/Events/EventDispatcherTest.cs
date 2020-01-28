@@ -82,10 +82,10 @@ namespace OpsBro.Domain.Tests.Events
         {
             return new Mock<EventSubscriber>("", 
                 HttpMethod.Post, 
-                new JObject(), 
-                new List<TemplateRule>(),
-                new List<TemplateRule>(),
-                new List<TemplateRule>(),
+                new JObject(),
+                new List<BodyTemplateRule>(),
+                new List<HeaderTemplateRule>(),
+                new List<UrlTemplateRule>(),
                 new JObject());
         }
     }

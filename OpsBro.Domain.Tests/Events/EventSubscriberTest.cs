@@ -14,9 +14,9 @@ namespace OpsBro.Domain.Tests.Events
         private static readonly EventSubscriber DefaultEventSubscriber = new EventSubscriber("",
             HttpMethod.Post,
             new JObject(),
-            new List<TemplateRule>(),
-            new List<TemplateRule>(),
-            new List<TemplateRule>(),
+            new List<BodyTemplateRule>(),
+            new List<HeaderTemplateRule>(),
+            new List<UrlTemplateRule>(),
             new JObject());
 
         [Test]
@@ -26,27 +26,27 @@ namespace OpsBro.Domain.Tests.Events
                 new EventSubscriber(urlTemplate: null,
                     HttpMethod.Post,
                     new JObject(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
+                    new List<BodyTemplateRule>(),
+                    new List<HeaderTemplateRule>(),
+                    new List<UrlTemplateRule>(),
                     new JObject()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
                     method: null,
                     new JObject(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
+                    new List<BodyTemplateRule>(),
+                    new List<HeaderTemplateRule>(),
+                    new List<UrlTemplateRule>(),
                     new JObject()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
                     HttpMethod.Post,
                     null,
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
+                    new List<BodyTemplateRule>(),
+                    new List<HeaderTemplateRule>(),
+                    new List<UrlTemplateRule>(),
                     new JObject()));
 
             Assert.Throws<ArgumentNullException>(() =>
@@ -54,25 +54,25 @@ namespace OpsBro.Domain.Tests.Events
                     HttpMethod.Post,
                     new JObject(),
                     null,
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
+                    new List<HeaderTemplateRule>(),
+                    new List<UrlTemplateRule>(),
                     new JObject()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
                     HttpMethod.Post,
                     new JObject(),
-                    new List<TemplateRule>(),
+                    new List<BodyTemplateRule>(),
                     null,
-                    new List<TemplateRule>(),
+                    new List<UrlTemplateRule>(),
                     new JObject()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
                     HttpMethod.Post,
                     new JObject(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
+                    new List<BodyTemplateRule>(),
+                    new List<HeaderTemplateRule>(),
                     null,
                     new JObject()));
 
@@ -80,9 +80,9 @@ namespace OpsBro.Domain.Tests.Events
                 new EventSubscriber("",
                     HttpMethod.Post,
                     new JObject(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
-                    new List<TemplateRule>(),
+                    new List<BodyTemplateRule>(),
+                    new List<HeaderTemplateRule>(),
+                    new List<UrlTemplateRule>(),
                     null));
         }
 

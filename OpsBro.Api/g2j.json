@@ -56,23 +56,23 @@
           },
           "bodyTemplateRules": [
             {
-              "token": "fields.assignee.name",
+              "path": "fields.assignee.name",
               "property": "event.author"
             },
             {
-              "token": "fields.customfield_10035",
+              "path": "fields.customfield_10035",
               "property": "event.ref"
             }
           ],
           "headerTemplateRules": [
             {
-              "token": "Authorization",
+              "headerName": "Authorization",
               "property": "meta.auth_header"
             }
           ],
           "urlTemplateRules": [
             {
-              "token": "{ISSUE}",
+              "substring": "{ISSUE}",
               "property": "event.issue"
             }
           ],
@@ -128,19 +128,19 @@
           },
           "bodyTemplateRules": [
             {
-              "token": "fields.customfield_10031",
+              "path": "fields.customfield_10031",
               "property": "event.url"
             }
           ],
           "headerTemplateRules": [
             {
-              "token": "Authorization",
+              "headerName": "Authorization",
               "property": "meta.auth_header"
             }
           ],
           "urlTemplateRules": [
             {
-              "token": "{ISSUE}",
+              "substring": "{ISSUE}",
               "property": "event.issue"
             }
           ],
@@ -187,13 +187,13 @@
           "bodyTemplateRules": [],
           "headerTemplateRules": [
             {
-              "token": "Authorization",
+              "headerName": "Authorization",
               "property": "meta.auth_header"
             }
           ],
           "urlTemplateRules": [
             {
-              "token": "{ISSUE}",
+              "substring": "{ISSUE}",
               "property": "event.issue"
             }
           ],
@@ -240,13 +240,13 @@
           "bodyTemplateRules": [],
           "headerTemplateRules": [
             {
-              "token": "Authorization",
+              "headerName": "Authorization",
               "property": "meta.auth_header"
             }
           ],
           "urlTemplateRules": [
             {
-              "token": "{ISSUE}",
+              "substring": "{ISSUE}",
               "property": "event.issue"
             }
           ],

@@ -15,14 +15,16 @@ namespace OpsBro.Domain.Events
     /// </summary>
     public class EventSubscriber
     {
+        private readonly JObject bodyTemplate;
+
         public EventSubscriber(string urlTemplate, HttpMethod method, JObject bodyTemplate,
-            ICollection<TemplateRule> bodyTemplateRules,
-            ICollection<TemplateRule> headerTemplateRules,
-            ICollection<TemplateRule> urlTemplateRules, JObject metadata)
+            ICollection<BodyTemplateRule> bodyTemplateRules,
+            ICollection<HeaderTemplateRule> headerTemplateRules,
+            ICollection<UrlTemplateRule> urlTemplateRules, JObject metadata)
         {
             UrlTemplate = urlTemplate ?? throw new ArgumentNullException(nameof(urlTemplate));
             Method = method ?? throw new ArgumentNullException(nameof(method));
-            BodyTemplate = bodyTemplate ?? throw new ArgumentNullException(nameof(bodyTemplate));
+            this.bodyTemplate = bodyTemplate ?? throw new ArgumentNullException(nameof(bodyTemplate));
             BodyTemplateRules = bodyTemplateRules ?? throw new ArgumentNullException(nameof(bodyTemplateRules));
             HeaderTemplateRules = headerTemplateRules ?? throw new ArgumentNullException(nameof(headerTemplateRules));
             UrlTemplateRules = urlTemplateRules ?? throw new ArgumentNullException(nameof(urlTemplateRules));
@@ -42,22 +44,22 @@ namespace OpsBro.Domain.Events
         /// <summary>
         /// Template of the body
         /// </summary>
-        public JObject BodyTemplate { get; }
+        public JObject BodyTemplate => bodyTemplate.DeepClone() as JObject;
 
         /// <summary>
         /// Set of rules to extract data from event/metadata and apply it to body template
         /// </summary>
-        public ICollection<TemplateRule> BodyTemplateRules { get; }
+        public ICollection<BodyTemplateRule> BodyTemplateRules { get; }
 
         /// <summary>
         /// Set of rules to extract model from event/metadata and apply it to headers template
         /// </summary>
-        public ICollection<TemplateRule> HeaderTemplateRules { get; }
+        public ICollection<HeaderTemplateRule> HeaderTemplateRules { get; }
 
         /// <summary>
         /// Set of rules to extract model from event/metadata and apply it to headers template
         /// </summary>
-        public ICollection<TemplateRule> UrlTemplateRules { get; }
+        public ICollection<UrlTemplateRule> UrlTemplateRules { get; }
 
         /// <summary>
         /// All additional model that required for template but can be subject to change independently from template (like authorization model) should be here.
@@ -82,8 +84,11 @@ namespace OpsBro.Domain.Events
                 ["meta"] = Metadata
             };
 
-            var url = ApplyUrlTemplate(UrlTemplate, model, UrlTemplateRules);
-            var body = ApplyBodyTemplate(BodyTemplate, model, BodyTemplateRules);
+            var url = UrlTemplateRules.Aggregate(UrlTemplate,
+                (current, urlTemplateRule) => urlTemplateRule.Apply(current, model));
+
+            var body = BodyTemplateRules.Aggregate(BodyTemplate,
+                (current, bodyTemplateRule) => bodyTemplateRule.Apply(current, model));
 
             var httpRequestMessage = new HttpRequestMessage
             {
@@ -92,42 +97,16 @@ namespace OpsBro.Domain.Events
                 RequestUri = new Uri(url)
             };
 
-            ApplyHeaderTemplate(httpRequestMessage.Headers, model, HeaderTemplateRules);
+            foreach (var headerTemplateRule in HeaderTemplateRules)
+            {
+                headerTemplateRule.Apply(httpRequestMessage.Headers, model);
+            }
 
             using var httpClient = new HttpClient();
-            var responseMessage = await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
+            var responseMessage =
+                await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
+
             responseMessage.EnsureSuccessStatusCode();
-        }
-
-        private static string ApplyUrlTemplate(string url, JToken model, ICollection<TemplateRule> templateRules)
-        {
-            return templateRules.Aggregate(url,
-                (current, binding) =>
-                    current.Replace(binding.Token, model.SelectToken(binding.Property).ToObject<string>()));
-        }
-
-        private static void ApplyHeaderTemplate(HttpHeaders headers, JToken model,
-            ICollection<TemplateRule> templateRules)
-        {
-            foreach (var binding in templateRules)
-            {
-                headers.Add(binding.Token, model.SelectToken(binding.Property).ToString());
-            }
-        }
-
-        private static JToken ApplyBodyTemplate(JToken body, JToken model, ICollection<TemplateRule> templateRules)
-        {
-            var bodyClone = body.DeepClone();
-
-            foreach (var binding in templateRules)
-            {
-                var bodyToken = bodyClone.SelectToken(binding.Token);
-                var propertyToken = model.SelectToken(binding.Property);
-
-                bodyToken.Replace(propertyToken);
-            }
-
-            return bodyClone;
         }
     }
 }
