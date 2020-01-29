@@ -1,0 +1,19 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:52805/",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "OpsBro.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "JSON_FILE_URL": "g2j.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+image: docker:git
+
+services:
+ - docker:dind
+
+stages:
+  - build
+
+build_backend_image:
+  stage: build
+  
+  only:
+  - /^v.*$/
+  - develop
+  variables:
+    IMAGE_NAME: opsbro/ops-bro:tagname:$TAG_VERSION
+  except:
+  - branches
+  before_script:
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD https://hub.docker.com/
+  - TAG_VERSION=$(echo $CI_COMMIT_REF_NAME | cut -d'v' -f 2)
+  script:
+  - docker build -t $IMAGE_NAME ./src
+  - docker push $IMAGE_NAME:$TAG_VERSION
