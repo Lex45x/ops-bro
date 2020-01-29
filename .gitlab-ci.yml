@@ -14,7 +14,7 @@ build_backend_image:
   variables:
     IMAGE_NAME: opsbro/ops-bro:tagname:$TAG_VERSION
   before_script:
-  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD https://hub.docker.com/
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - TAG_VERSION=$(echo $CI_COMMIT_REF_NAME | cut -d'v' -f 2)
   script:
   - docker build -t $IMAGE_NAME ./src
