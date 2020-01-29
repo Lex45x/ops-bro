@@ -2,7 +2,7 @@
 
 ## What is ops-bro?
 
-ops-bro is a standalone application that allows to setup custom integration between applications.
+ops-bro is a standalone application that allows to setup custom integration between services.
 * [How to use ops-bro?](docs/README.md#get-started-with-docker-image)
 * [Understanding the Configuration](docs/README.md#understanding-the-configuration)
 

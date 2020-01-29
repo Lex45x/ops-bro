@@ -1,11 +1,11 @@
-FROM microsoft/dotnet:2.2-sdk AS builder
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS builder
 WORKDIR /source
 
 COPY . .
-RUN dotnet restore PowerBinder.sln
-RUN dotnet publish ./PowerBinder.Api/PowerBinder.Api.csproj --output /app/ --configuration Release
+RUN dotnet restore OpsBro.sln
+RUN dotnet publish ./OpsBro.Api/OpsBro.Api.csproj --output /app/ --configuration Release
 
-FROM microsoft/dotnet:2.2-aspnetcore-runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
 WORKDIR /app
 COPY --from=builder /app .
-ENTRYPOINT ["dotnet", "PowerBinder.Api.dll"]
+ENTRYPOINT ["dotnet", "OpsBro.Api.dll"]
