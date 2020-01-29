@@ -49,8 +49,11 @@ Basically, this file represent a JSON object that can be represented via the nex
 Where the `listeners` is a collection of Listener and `eventDispatchers` is a collection of Event Dispatcher
 
 ## Types
+Types are not defined in the configuration, but are implicitly used to understand the logic under configuration. A list of types are presented as sub-header entries.
+
 ### Event
 Event has name and Data object adn represent an message about system state change.
+
 ### Request
 Inside the request object there are three properties:
 * `query` - contains all query parameters
@@ -187,6 +190,22 @@ Extraction rules allows to extract values from request directly to event.
 * `FirstRegexMatch` takes a first substring that match specified `pattern`  
 
 ## Event Dispatcher
+Event dispatcher is responsible for dispatch an event with specific name to it's subscribers. See dispatcher configuraiton below:
+```json
+{
+    "eventDispatchers": [
+        {
+            "eventName":"",
+            "schema":{},
+            "subscribers":[]
+        }
+    ]
+}
+```
+
+`eventName` - the same name as used in [Extractor](#extractor).  
+`schema` - [JSON Schema](https://json-schema.org/) used to guarantee data integrity and structure for event.
+`subscribers` - list of subscribers for event represented by this dispatcher
 
 ## Event Subscriber
 ### Template Rule
