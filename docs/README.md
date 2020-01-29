@@ -7,6 +7,7 @@
   - [Types](#types)
     - [Event](#event)
     - [Request](#request)
+    - [Event Context](#event-context)
   - [Listener](#listener)
   - [Extractor](#extractor)
     - [Validation Rule](#validation-rule)
@@ -60,6 +61,10 @@ Inside the request object there are three properties:
 * `body` - contains actual request body
 * `headers` - contains request headers
 
+### Event Context
+Inside the event context there is two properties:
+* `event` - event data in json
+* `meta` - [Metadata](#metadata) field from [Event subscriber](#event-subscriber)
 
 ## Listener
 
@@ -204,12 +209,72 @@ Event dispatcher is responsible for dispatch an event with specific name to it's
 ```
 
 `eventName` - the same name as used in [Extractor](#extractor).  
-`schema` - [JSON Schema](https://json-schema.org/) used to guarantee data integrity and structure for event.
+`schema` - [JSON Schema](https://json-schema.org/) used to guarantee data integrity and structure for event.  
 `subscribers` - list of subscribers for event represented by this dispatcher
 
 ## Event Subscriber
+Event subscriber converts an event to an HTTP call.  
+Each subscriber holds templates and rules for this templates.  
+Also, each subscriber has own metadata - specific object that can be accessed from template rules. [Metadata](#metadata) is described below.
+See an example of event subscriber
+```json
+{
+    "subscribers": [
+        {
+            "urlTemplate": "https://example.com/{path}",
+            "method": "POST",
+            "bodyTemplate": {},
+            "bodyTemplateRules": [],
+            "headerTemplateRules": [],
+            "urlTemplateRules": [],
+            "metadata": {
+                "auth_header": ""
+            }
+        }
+    ]
+}
+```
+
 ### Template Rule
+Template rule describes how to fill event/metadata json token into predefined template.
+Basically, template rules depends on the template type and so there are difference between them. See types defined below.
+
 #### Url
+Template rule for the URL replaces substring in the template with value found by Property.
+
+```json
+{
+    "substring": "{ISSUE}",
+    "property": "event.issue"
+}
+``` 
+`substring` - substring to replace in urlTemplate from subscriber.  
+`property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
+
 #### Body
+Template rule for body replaces json token in the template with token found by property path.
+
+```json
+{
+    "path": "fields.assignee.name",
+    "property": "event.author"
+}
+```
+`path` - path inside the bodyTemplate.  
+`property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
+
 #### Header
+Template rule for header adds a header with defined name to the http headers collection.
+
+```json
+{
+    "headerName": "Authorization",
+    "property": "meta.auth_header"
+}
+```
+
+`headerName` - name of the header to be added
+`property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
+
 ### Metadata
+Metadata is json object that contains data that is subject to change. For example, authentication data is different for all clients of the ops-bro, so it's make sense to extract all authentication details to separate metadata property. This will simplify configuration update in case of updating authentication data.
