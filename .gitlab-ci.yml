@@ -15,7 +15,7 @@ build_backend_image:
     IMAGE_NAME: opsbro/ops-bro:$TAG_VERSION
   before_script:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  - TAG_VERSION=$(echo $CI_COMMIT_REF_NAME | cut -d'v' -f 2)
+  - TAG_VERSION=develop-$CI_COMMIT_SHORT_SHA
   script:
   - docker build -t $IMAGE_NAME ./src
   - docker push $IMAGE_NAME:$TAG_VERSION
