@@ -22,7 +22,7 @@
 
 # Get Started with Docker Image
 
-//here goes link to docker hub and explanations with configuration passing
+You can find docker images in the [Docker Hub](https://hub.docker.com/repository/docker/opsbro/ops-bro).  
 
 # Concept
 
