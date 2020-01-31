@@ -12,10 +12,10 @@ build_backend_image:
   - /^v.*$/
   - develop
   variables:
-    IMAGE_NAME: opsbro/ops-bro:$TAG_VERSION
+    IMAGE_NAME: opsbro/ops-bro
   before_script:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - TAG_VERSION=develop-$CI_COMMIT_SHORT_SHA
   script:
-  - docker build -t $IMAGE_NAME ./src
+  - docker build -t $IMAGE_NAME:$TAG_VERSION ./src
   - docker push $IMAGE_NAME:$TAG_VERSION
