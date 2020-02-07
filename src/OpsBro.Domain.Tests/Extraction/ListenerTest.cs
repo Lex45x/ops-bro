@@ -8,6 +8,7 @@ using NUnit.Framework;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction;
 using OpsBro.Domain.Extraction.Rules;
+using OpsBro.Domain.Extraction.Validation;
 
 namespace OpsBro.Domain.Tests.Extraction
 {

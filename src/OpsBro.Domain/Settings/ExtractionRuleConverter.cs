@@ -8,11 +8,6 @@ namespace OpsBro.Domain.Settings
 {
     public class ExtractionRuleConverter : JsonConverter
     {
-        private static JsonSerializerSettings _specifiedSubclassConversion = new JsonSerializerSettings
-        {
-            ContractResolver = new BaseSpecifiedConcreteClassConverter()
-        };
-
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
@@ -38,15 +33,5 @@ namespace OpsBro.Domain.Settings
         }
 
         public override bool CanWrite => false;
-    }
-
-    public class BaseSpecifiedConcreteClassConverter : DefaultContractResolver
-    {
-        protected override JsonConverter ResolveContractConverter(Type objectType)
-        {
-            if (typeof(ExtractionRule).IsAssignableFrom(objectType) && !objectType.IsAbstract)
-                return null; // pretend TableSortRuleConvert is not specified (thus avoiding a stack overflow)
-            return base.ResolveContractConverter(objectType);
-        }
     }
 }

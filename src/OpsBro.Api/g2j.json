@@ -90,17 +90,17 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           },
           "url": {
             "$id": "/properties/url",
             "type": "string",
             "title": "The Url Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           }
         },
-        "required": [ "issue", "url" ]
+        "required": ["issue", "url"]
       },
       "subscribers": [
         {
@@ -155,10 +155,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           }
         },
-        "required": [ "issue" ]
+        "required": ["issue"]
       },
       "subscribers": [
         {
@@ -205,10 +205,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           }
         },
-        "required": [ "issue" ]
+        "required": ["issue"]
       },
       "subscribers": [
         {
@@ -273,8 +273,11 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
-              "operator": "Equals"
+              "configPath": "gitlab.token",
+              "operator": "Equals",
+              "config": {
+                "$ref": "config"
+              } 
             },
             {
               "path": "body.object_kind",
@@ -307,7 +310,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -346,7 +349,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -385,7 +388,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -419,7 +422,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -439,7 +442,10 @@
   ],
   "config": {
     "jira": {
-      "auth": "" 
-    } 
-  } 
+      "auth": "jira-token"
+    },
+    "gitlab": {
+      "token": "gitlab-token"
+    }
+  }
 }

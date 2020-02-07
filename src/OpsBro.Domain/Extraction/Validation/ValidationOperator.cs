@@ -1,4 +1,4 @@
-﻿namespace OpsBro.Domain.Extraction
+﻿namespace OpsBro.Domain.Extraction.Validation
 {
     /// <summary>
     /// Defines a way to validation rule creation

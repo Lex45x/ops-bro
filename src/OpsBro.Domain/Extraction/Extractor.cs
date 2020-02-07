@@ -6,6 +6,7 @@ using FluentValidation;
 using Newtonsoft.Json.Linq;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction.Rules;
+using OpsBro.Domain.Extraction.Validation;
 
 namespace OpsBro.Domain.Extraction
 {
@@ -21,7 +22,7 @@ namespace OpsBro.Domain.Extraction
             EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
             ExtractionRules = extractionRules ?? throw new ArgumentNullException(nameof(extractionRules));
             ValidationRules = validationRules ?? throw new ArgumentNullException(nameof(validationRules));
-            
+
             Validator = CreateValidator();
         }
 
@@ -36,38 +37,8 @@ namespace OpsBro.Domain.Extraction
                 CascadeMode = CascadeMode.StopOnFirstFailure
             };
 
-            foreach (var validationRule in ValidationRules)
-            {
-                switch (validationRule.Operator)
-                {
-                    case ValidationOperator.Equals:
-                        inlineValidator.RuleFor(o => o.SelectToken(validationRule.Path))
-                            .Must(token =>
-                            {
-                                var comparisonValue = JToken.FromObject(validationRule.Value ?? JValue.CreateNull());
-                                var tokensAreEqual = JToken.DeepEquals(token, comparisonValue);
-
-                                return tokensAreEqual;
-                            })
-                            .WithName(validationRule.Path);
-                        break;
-                    case ValidationOperator.NotEquals:
-                        inlineValidator.RuleFor(o => o.SelectToken(validationRule.Path))
-                            .Must(token =>
-                            {
-                                var comparisonValue = JToken.FromObject(validationRule.Value ?? JValue.CreateNull());
-                                var tokensAreEqual = JToken.DeepEquals(token, comparisonValue);
-
-                                return !tokensAreEqual;
-                            })
-                            .WithName(validationRule.Path);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            return inlineValidator;
+            return ValidationRules.Aggregate(inlineValidator,
+                (current, validationRule) => validationRule.Populate(current));
         }
 
         /// <summary>

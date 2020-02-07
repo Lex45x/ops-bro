@@ -1,11 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
+using FluentValidation;
+using Newtonsoft.Json.Linq;
 
-namespace OpsBro.Domain.Extraction
+namespace OpsBro.Domain.Extraction.Validation
 {
-    public class ValidationRule
+    /// <summary>
+    /// Represent a rule to validate JToken that may be found by <see cref="Path"/>
+    /// </summary>
+    public abstract class ValidationRule
     {
-        public ValidationRule(string path, object value, ValidationOperator @operator)
+        protected ValidationRule(string path, ValidationOperator @operator)
         {
             if (!Enum.IsDefined(typeof(ValidationOperator), @operator))
             {
@@ -14,7 +19,6 @@ namespace OpsBro.Domain.Extraction
 
             Operator = @operator;
             Path = path ?? throw new ArgumentNullException(nameof(path));
-            Value = value;
         }
 
         /// <summary>
@@ -27,9 +31,6 @@ namespace OpsBro.Domain.Extraction
         /// </summary>
         public string Path { get; }
 
-        /// <summary>
-        /// Value to compare with
-        /// </summary>
-        public object Value { get; }
+        public abstract InlineValidator<JObject> Populate(InlineValidator<JObject> validator);
     }
 }
