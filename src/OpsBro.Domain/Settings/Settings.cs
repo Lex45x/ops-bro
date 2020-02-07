@@ -40,6 +40,8 @@ namespace OpsBro.Domain.Settings
 
         private void Initialize(string configuration)
         {
+            //todo: add config assertions
+
             var root = JObject.Parse(configuration);
 
             ListenersByListenerName = root["listeners"]
@@ -49,6 +51,8 @@ namespace OpsBro.Domain.Settings
             EventDispatcherByEventName = root["eventDispatchers"]
                 .ToObject<List<EventDispatcher>>(serializer)
                 .ToDictionary(dispatcher => dispatcher.EventName);
+
+            Config = root["config"] as JObject;
         }
 
         private readonly JsonSerializer serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings
@@ -64,27 +68,6 @@ namespace OpsBro.Domain.Settings
         public Task Initialization { get; }
         public IDictionary<string, Listener> ListenersByListenerName { get; private set; }
         public IDictionary<string, EventDispatcher> EventDispatcherByEventName { get; private set; }
-    }
-
-    internal class HttpMethodStringConverter : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-        {
-            var httpMethod = value as HttpMethod;
-
-            writer.WriteValue(httpMethod?.Method);
-        }
-
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
-            JsonSerializer serializer)
-        {
-            var httpMethodString = reader.Value as string;
-            return new HttpMethod(httpMethodString);
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(HttpMethod);
-        }
+        public JObject Config { get; private set; }
     }
 }

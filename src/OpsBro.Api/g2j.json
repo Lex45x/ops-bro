@@ -67,7 +67,7 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
@@ -75,10 +75,7 @@
               "substring": "{ISSUE}",
               "property": "event.issue"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     },
@@ -135,7 +132,7 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
@@ -143,10 +140,7 @@
               "substring": "{ISSUE}",
               "property": "event.issue"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     },
@@ -188,7 +182,7 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
@@ -196,10 +190,7 @@
               "substring": "{ISSUE}",
               "property": "event.issue"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     },
@@ -241,7 +232,7 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
@@ -249,10 +240,7 @@
               "substring": "{ISSUE}",
               "property": "event.issue"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     }
@@ -448,5 +436,10 @@
         }
       ]
     }
-  ]
+  ],
+  "config": {
+    "jira": {
+      "auth": "" 
+    } 
+  } 
 }

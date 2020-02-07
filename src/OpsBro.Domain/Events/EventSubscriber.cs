@@ -20,7 +20,7 @@ namespace OpsBro.Domain.Events
         public EventSubscriber(string urlTemplate, HttpMethod method, JObject bodyTemplate,
             ICollection<BodyTemplateRule> bodyTemplateRules,
             ICollection<HeaderTemplateRule> headerTemplateRules,
-            ICollection<UrlTemplateRule> urlTemplateRules, JObject metadata)
+            ICollection<UrlTemplateRule> urlTemplateRules)
         {
             UrlTemplate = urlTemplate ?? throw new ArgumentNullException(nameof(urlTemplate));
             Method = method ?? throw new ArgumentNullException(nameof(method));
@@ -28,7 +28,6 @@ namespace OpsBro.Domain.Events
             BodyTemplateRules = bodyTemplateRules ?? throw new ArgumentNullException(nameof(bodyTemplateRules));
             HeaderTemplateRules = headerTemplateRules ?? throw new ArgumentNullException(nameof(headerTemplateRules));
             UrlTemplateRules = urlTemplateRules ?? throw new ArgumentNullException(nameof(urlTemplateRules));
-            Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
         }
 
         /// <summary>
@@ -47,31 +46,27 @@ namespace OpsBro.Domain.Events
         public JObject BodyTemplate => bodyTemplate.DeepClone() as JObject;
 
         /// <summary>
-        /// Set of rules to extract data from event/metadata and apply it to body template
+        /// Set of rules to extract data from event/config and apply it to body template
         /// </summary>
         public ICollection<BodyTemplateRule> BodyTemplateRules { get; }
 
         /// <summary>
-        /// Set of rules to extract model from event/metadata and apply it to headers template
+        /// Set of rules to extract model from event/config and apply it to headers template
         /// </summary>
         public ICollection<HeaderTemplateRule> HeaderTemplateRules { get; }
 
         /// <summary>
-        /// Set of rules to extract model from event/metadata and apply it to headers template
+        /// Set of rules to extract model from event/config and apply it to headers template
         /// </summary>
         public ICollection<UrlTemplateRule> UrlTemplateRules { get; }
-
-        /// <summary>
-        /// All additional model that required for template but can be subject to change independently from template (like authorization model) should be here.
-        /// </summary>
-        public JObject Metadata { get; }
 
         /// <summary>
         /// Fill template with model from event and send http request.
         /// </summary>
         /// <param name="extractedEvent"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
-        public virtual async Task Handle(Event extractedEvent)
+        public virtual async Task Handle(Event extractedEvent, JObject config)
         {
             if (extractedEvent == null)
             {
@@ -81,7 +76,7 @@ namespace OpsBro.Domain.Events
             var model = new JObject
             {
                 ["event"] = extractedEvent.Data,
-                ["meta"] = Metadata
+                ["config"] = config
             };
 
             var url = UrlTemplateRules.Aggregate(UrlTemplate,
