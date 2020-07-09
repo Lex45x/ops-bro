@@ -17,6 +17,7 @@ namespace OpsBro.Domain.Tests.Events
     {
         public static readonly string EventName = "EventDispatcherTest_Event";
         public static readonly JSchema EmptyJSchema = JSchema.Parse("{}");
+        public static readonly JObject EmptyJObject = new JObject();
 
         public static readonly EventDispatcher DefaultDispatcher =
             new EventDispatcher(EventName, EmptyJSchema, new List<EventSubscriber>());
@@ -33,14 +34,14 @@ namespace OpsBro.Domain.Tests.Events
         [Test]
         public void Dispatch_ArgumentValidation()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(() => DefaultDispatcher.Dispatch(null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => DefaultDispatcher.Dispatch(null, EmptyJObject));
         }
 
         [Test]
         public void Dispatch_InvalidEventName()
         {
             var @event = new Event("", new JObject());
-            Assert.ThrowsAsync<InvalidOperationException>(() => DefaultDispatcher.Dispatch(@event));
+            Assert.ThrowsAsync<InvalidOperationException>(() => DefaultDispatcher.Dispatch(@event, EmptyJObject));
         }
 
         [Test]
@@ -54,7 +55,7 @@ namespace OpsBro.Domain.Tests.Events
                 ["property"] = "value"
             });
 
-            Assert.ThrowsAsync<JSchemaValidationException>(() => eventDispatcher.Dispatch(@event));
+            Assert.ThrowsAsync<JSchemaValidationException>(() => eventDispatcher.Dispatch(@event, EmptyJObject));
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace OpsBro.Domain.Tests.Events
         {
             var firstEventSubscriberMock = CreateEventSubscriberMock();
             var secondEventSubscriberMock = CreateEventSubscriberMock();
-            secondEventSubscriberMock.Setup(subscriber => subscriber.Handle(It.IsAny<Event>()))
+            secondEventSubscriberMock.Setup(subscriber => subscriber.Handle(It.IsAny<Event>(), EmptyJObject))
                 .Throws<ApplicationException>();
 
             var eventDispatcher = new EventDispatcher(EventName, EmptyJSchema, new List<EventSubscriber>
@@ -73,7 +74,7 @@ namespace OpsBro.Domain.Tests.Events
 
             var @event = new Event(EventName, new JObject());
 
-            Assert.DoesNotThrowAsync(() => eventDispatcher.Dispatch(@event));
+            Assert.DoesNotThrowAsync(() => eventDispatcher.Dispatch(@event, EmptyJObject));
 
             Mock.VerifyAll(firstEventSubscriberMock, secondEventSubscriberMock);
         }
@@ -85,8 +86,7 @@ namespace OpsBro.Domain.Tests.Events
                 new JObject(),
                 new List<BodyTemplateRule>(),
                 new List<HeaderTemplateRule>(),
-                new List<UrlTemplateRule>(),
-                new JObject());
+                new List<UrlTemplateRule>());
         }
     }
 }

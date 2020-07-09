@@ -6,6 +6,7 @@ using NUnit.Framework;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction;
 using OpsBro.Domain.Extraction.Rules;
+using OpsBro.Domain.Extraction.Validation;
 
 namespace OpsBro.Domain.Tests.Extraction
 {
@@ -16,20 +17,20 @@ namespace OpsBro.Domain.Tests.Extraction
         public void Constructor_ArgumentValidation()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                new Extractor(null, "", new List<ExtractionRule>(), new List<ValidationRule>()));
+                new Extractor(name: null, "", new List<ExtractionRule>(), new List<ValidationRule>()));
             Assert.Throws<ArgumentNullException>(() =>
-                new Extractor("", null, new List<ExtractionRule>(), new List<ValidationRule>()));
+                new Extractor("", eventName: null, new List<ExtractionRule>(), new List<ValidationRule>()));
             Assert.Throws<ArgumentNullException>(() =>
-                new Extractor("", "", null, new List<ValidationRule>()));
+                new Extractor("", "", extractionRules: null, new List<ValidationRule>()));
             Assert.Throws<ArgumentNullException>(() =>
-                new Extractor("", "", new List<ExtractionRule>(), null));
+                new Extractor("", "", new List<ExtractionRule>(), validationRules: null));
         }
 
         [Test]
         public void TryExtract_ArgumentValidation()
         {
             var extractor = new Extractor("", "", new List<ExtractionRule>(), new List<ValidationRule>());
-            Assert.Throws<ArgumentNullException>(() => extractor.TryExtract(null, out var extractedEvent));
+            Assert.Throws<ArgumentNullException>(() => extractor.TryExtract(payload: null, out var extractedEvent));
         }
 
         [Test]
@@ -139,24 +140,24 @@ namespace OpsBro.Domain.Tests.Extraction
                 new PayloadValidationTestCase(payload,
                     new List<ValidationRule>
                     {
-                        new ValidationRule("property", "value", ValidationOperator.Equals)
+                        new ValueValidationRule("property", "value", ValidationOperator.Equals)
                     },
-                    true),
+                    expectedResult: true),
                 new PayloadValidationTestCase(payload,
                     new List<ValidationRule>
                     {
-                        new ValidationRule("property", "another value", ValidationOperator.Equals)
-                    }, false),
+                        new ValueValidationRule("property", "another value", ValidationOperator.Equals)
+                    }, expectedResult: false),
                 new PayloadValidationTestCase(payload, new List<ValidationRule>
                 {
-                    new ValidationRule("property", "another value", ValidationOperator.NotEquals)
-                }, true),
+                    new ValueValidationRule("property", "another value", ValidationOperator.NotEquals)
+                }, expectedResult: true),
                 new PayloadValidationTestCase(payload,
                     new List<ValidationRule>
                     {
-                        new ValidationRule("property", "value", ValidationOperator.NotEquals)
+                        new ValueValidationRule("property", "value", ValidationOperator.NotEquals)
                     },
-                    false),
+                    expectedResult: false),
                 new PayloadValidationTestCase(new JObject
                 {
                     ["id"] = 418,
@@ -170,11 +171,11 @@ namespace OpsBro.Domain.Tests.Extraction
                     }
                 }, new List<ValidationRule>
                 {
-                    new ValidationRule("id", 418, ValidationOperator.Equals),
-                    new ValidationRule("gender", "coffee machine", ValidationOperator.NotEquals),
-                    new ValidationRule("tags[1]", "http", ValidationOperator.Equals),
-                    new ValidationRule("tags[0]", "tea", ValidationOperator.NotEquals)
-                }, true),
+                    new ValueValidationRule("id", value: 418, ValidationOperator.Equals),
+                    new ValueValidationRule("gender", "coffee machine", ValidationOperator.NotEquals),
+                    new ValueValidationRule("tags[1]", "http", ValidationOperator.Equals),
+                    new ValueValidationRule("tags[0]", "tea", ValidationOperator.NotEquals)
+                }, expectedResult: true),
             };
         }
     }

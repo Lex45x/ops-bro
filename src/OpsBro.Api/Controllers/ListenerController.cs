@@ -43,7 +43,7 @@ namespace OpsBro.Api.Controllers
                     continue;
                 }
 
-                await eventDispatcher.Dispatch(@event);
+                await eventDispatcher.Dispatch(@event, settings.Config);
             }
         }
     }

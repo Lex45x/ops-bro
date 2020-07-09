@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
 namespace OpsBro.Domain.Events
@@ -37,8 +38,9 @@ namespace OpsBro.Domain.Events
         /// All subscribers exceptions will be suppressed.
         /// </summary>
         /// <param name="extractedEvent"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
-        public async Task Dispatch(Event extractedEvent)
+        public async Task Dispatch(Event extractedEvent, JObject config)
         {
             if (extractedEvent == null)
             {
@@ -57,7 +59,7 @@ namespace OpsBro.Domain.Events
             {
                 try
                 {
-                    await subscriber.Handle(extractedEvent);
+                    await subscriber.Handle(extractedEvent, config);
                 }
                 catch (Exception e)
                 {

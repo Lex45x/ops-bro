@@ -18,7 +18,7 @@
       - [Url](#url)
       - [Body](#body)
       - [Header](#header)
-    - [Metadata](#metadata)
+  - [Config](#config)
 
 # Get Started with Docker Image
 
@@ -44,10 +44,12 @@ Basically, this file represent a JSON object that can be represented via the nex
 ```json
 {
     "listeners":[],
-    "eventDispatchers":[]
+    "eventDispatchers":[],
+    "config":{}
 }
 ```
-Where the `listeners` is a collection of Listener and `eventDispatchers` is a collection of Event Dispatcher
+Where the `listeners` is a collection of Listener and `eventDispatchers` is a collection of Event Dispatcher.  
+`config` is a json object that could hold configuration values for the template.
 
 ## Types
 Types are not defined in the configuration, but are implicitly used to understand the logic under configuration. A list of types are presented as sub-header entries.
@@ -64,7 +66,7 @@ Inside the request object there are three properties:
 ### Event Context
 Inside the event context there is two properties:
 * `event` - event data in json
-* `meta` - [Metadata](#metadata) field from [Event subscriber](#event-subscriber)
+* `config` - [configuration object](#config)
 
 ## Listener
 
@@ -146,6 +148,14 @@ Validation rule allows to validate json using [JSON Path](https://restfulapi.net
               "path": "headers.X-Gitlab-Token[0]",
               "value": "{{token from webhook configuration}}",
               "operator": "Equals"
+        },
+        {
+              "path": "headers.X-Gitlab-Token[0]",
+              "configPath": "gitlab.token",
+              "operator": "Equals",
+              "config": {
+                  "$ref": "config"
+              }
         }
     ]
 }
@@ -154,6 +164,15 @@ Validation rule allows to validate json using [JSON Path](https://restfulapi.net
 `path` is json path in the [request](#request)
 
 An example will take first (`0`) `X-Gitlab-Token` header from request and check its equality to `{{token from webhook configuration}}` value.
+
+Also, the value could be provided from the [configuration](#config) object.  
+To use configuration object inside validaiton rules, we have to import it first:  
+```json
+"config": {
+    "$ref": "config"
+}
+```
+Second step would be to set `"configPath": "gitlab.token"` to specify path that has to be used.  
 
 Currently, there is two operators with self-explanatory names. 
 * Equals
@@ -215,7 +234,6 @@ Event dispatcher is responsible for dispatch an event with specific name to it's
 ## Event Subscriber
 Event subscriber converts an event to an HTTP call.  
 Each subscriber holds templates and rules for this templates.  
-Also, each subscriber has own metadata - specific object that can be accessed from template rules. [Metadata](#metadata) is described below.
 See an example of event subscriber
 ```json
 {
@@ -276,5 +294,17 @@ Template rule for header adds a header with defined name to the http headers col
 `headerName` - name of the header to be added
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
 
-### Metadata
-Metadata is json object that contains data that is subject to change. For example, authentication data is different for all clients of the ops-bro, so it's make sense to extract all authentication details to separate metadata property. This will simplify configuration update in case of updating authentication data.
+## Config
+
+Config object created to improove reusability of the templates.
+It can hold any value and may be imported into [validation rules](#validation-rule) as well as become a part of [Event Context](#event-context).
+
+```json
+"config": {
+    "jira": {
+        "auth": "jira-token"
+    },
+    "gitlab": {
+        "token": "gitlab-token"
+    }
+```

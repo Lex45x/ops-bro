@@ -32,7 +32,7 @@
       },
       "subscribers": [
         {
-          "urlTemplate": "https://*.atlassian.net/rest/api/2/issue/{ISSUE}/transitions",
+          "urlTemplate": "https://{HOST}/rest/api/2/issue/{ISSUE}/transitions",
           "method": "POST",
           "bodyTemplate": {
             "update": {
@@ -67,18 +67,19 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
             {
               "substring": "{ISSUE}",
               "property": "event.issue"
+            },
+            {
+              "substring": "{HOST}",
+              "property": "config.jira.host"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     },
@@ -93,17 +94,17 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           },
           "url": {
             "$id": "/properties/url",
             "type": "string",
             "title": "The Url Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           }
         },
-        "required": [ "issue", "url" ]
+        "required": ["issue", "url"]
       },
       "subscribers": [
         {
@@ -135,7 +136,7 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
@@ -143,10 +144,7 @@
               "substring": "{ISSUE}",
               "property": "event.issue"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     },
@@ -161,10 +159,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           }
         },
-        "required": [ "issue" ]
+        "required": ["issue"]
       },
       "subscribers": [
         {
@@ -188,7 +186,7 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
@@ -196,10 +194,7 @@
               "substring": "{ISSUE}",
               "property": "event.issue"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     },
@@ -214,10 +209,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [ "" ]
+            "examples": [""]
           }
         },
-        "required": [ "issue" ]
+        "required": ["issue"]
       },
       "subscribers": [
         {
@@ -241,7 +236,7 @@
           "headerTemplateRules": [
             {
               "headerName": "Authorization",
-              "property": "meta.auth_header"
+              "property": "config.jira.auth"
             }
           ],
           "urlTemplateRules": [
@@ -249,10 +244,7 @@
               "substring": "{ISSUE}",
               "property": "event.issue"
             }
-          ],
-          "metadata": {
-            "auth_header": "Basic ="
-          }
+          ]
         }
       ]
     }
@@ -285,8 +277,11 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
-              "operator": "Equals"
+              "configPath": "gitlab.token",
+              "operator": "Equals",
+              "config": {
+                "$ref": "config"
+              } 
             },
             {
               "path": "body.object_kind",
@@ -319,7 +314,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -358,7 +353,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -397,7 +392,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -431,7 +426,7 @@
           "validationRules": [
             {
               "path": "headers.X-Gitlab-Token[0]",
-              "value": "",
+              "configPath": "gitlab.token",
               "operator": "Equals"
             },
             {
@@ -448,5 +443,14 @@
         }
       ]
     }
-  ]
+  ],
+  "config": {
+    "jira": {
+      "auth": "jira-token",
+      "host": "example.atlassian.com"
+    },
+    "gitlab": {
+      "token": "gitlab-token"
+    }
+  }
 }

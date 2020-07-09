@@ -16,8 +16,7 @@ namespace OpsBro.Domain.Tests.Events
             new JObject(),
             new List<BodyTemplateRule>(),
             new List<HeaderTemplateRule>(),
-            new List<UrlTemplateRule>(),
-            new JObject());
+            new List<UrlTemplateRule>());
 
         [Test]
         public void Constructor_ArgumentValidation()
@@ -28,8 +27,7 @@ namespace OpsBro.Domain.Tests.Events
                     new JObject(),
                     new List<BodyTemplateRule>(),
                     new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>(),
-                    new JObject()));
+                    new List<UrlTemplateRule>()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
@@ -37,8 +35,7 @@ namespace OpsBro.Domain.Tests.Events
                     new JObject(),
                     new List<BodyTemplateRule>(),
                     new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>(),
-                    new JObject()));
+                    new List<UrlTemplateRule>()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
@@ -46,8 +43,7 @@ namespace OpsBro.Domain.Tests.Events
                     null,
                     new List<BodyTemplateRule>(),
                     new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>(),
-                    new JObject()));
+                    new List<UrlTemplateRule>()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
@@ -55,8 +51,7 @@ namespace OpsBro.Domain.Tests.Events
                     new JObject(),
                     null,
                     new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>(),
-                    new JObject()));
+                    new List<UrlTemplateRule>()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
@@ -64,8 +59,7 @@ namespace OpsBro.Domain.Tests.Events
                     new JObject(),
                     new List<BodyTemplateRule>(),
                     null,
-                    new List<UrlTemplateRule>(),
-                    new JObject()));
+                    new List<UrlTemplateRule>()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
@@ -73,23 +67,13 @@ namespace OpsBro.Domain.Tests.Events
                     new JObject(),
                     new List<BodyTemplateRule>(),
                     new List<HeaderTemplateRule>(),
-                    null,
-                    new JObject()));
-
-            Assert.Throws<ArgumentNullException>(() =>
-                new EventSubscriber("",
-                    HttpMethod.Post,
-                    new JObject(),
-                    new List<BodyTemplateRule>(),
-                    new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>(),
                     null));
         }
 
         [Test]
         public void Dispatch_ArgumentValidation()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(() => DefaultEventSubscriber.Handle(null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => DefaultEventSubscriber.Handle(null, new JObject()));
         }
     }
 }
