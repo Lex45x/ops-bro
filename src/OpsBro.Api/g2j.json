@@ -32,7 +32,7 @@
       },
       "subscribers": [
         {
-          "urlTemplate": "https://*.atlassian.net/rest/api/2/issue/{ISSUE}/transitions",
+          "urlTemplate": "https://{HOST}/rest/api/2/issue/{ISSUE}/transitions",
           "method": "POST",
           "bodyTemplate": {
             "update": {
@@ -74,6 +74,10 @@
             {
               "substring": "{ISSUE}",
               "property": "event.issue"
+            },
+            {
+              "substring": "{HOST}",
+              "property": "config.jira.host"
             }
           ]
         }
@@ -442,7 +446,8 @@
   ],
   "config": {
     "jira": {
-      "auth": "jira-token"
+      "auth": "jira-token",
+      "host": "example.atlassian.com"
     },
     "gitlab": {
       "token": "gitlab-token"
