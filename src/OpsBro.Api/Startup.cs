@@ -49,8 +49,7 @@ namespace OpsBro.Api
                 });
             });
 
-            var settings = new Settings();
-            services.AddSingleton<ISettings>(settings);
+            services.AddSingleton(Program.Settings);
 
             services.AddControllers();
         }

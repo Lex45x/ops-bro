@@ -152,10 +152,7 @@ Validation rule allows to validate json using [JSON Path](https://restfulapi.net
         {
               "path": "headers.X-Gitlab-Token[0]",
               "configPath": "gitlab.token",
-              "operator": "Equals",
-              "config": {
-                  "$ref": "config"
-              }
+              "operator": "Equals"
         }
     ]
 }
@@ -166,13 +163,7 @@ Validation rule allows to validate json using [JSON Path](https://restfulapi.net
 An example will take first (`0`) `X-Gitlab-Token` header from request and check its equality to `{{token from webhook configuration}}` value.
 
 Also, the value could be provided from the [configuration](#config) object.  
-To use configuration object inside validaiton rules, we have to import it first:  
-```json
-"config": {
-    "$ref": "config"
-}
-```
-Second step would be to set `"configPath": "gitlab.token"` to specify path that has to be used.  
+To use configuration object inside validaiton rules, we have to set `"configPath": "gitlab.token"` to specify path inside [configuration](#config) object.  
 
 Currently, there is two operators with self-explanatory names. 
 * Equals

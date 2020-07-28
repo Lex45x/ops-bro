@@ -3,7 +3,7 @@
     {
       "eventName": "take_in_progress",
       "schema": {
-        "$id": "http: //example.com/example.json",
+        "$id": "g2j/take_in_progress",
         "type": "object",
         "properties": {
           "issue": {
@@ -151,7 +151,7 @@
     {
       "eventName": "task_work_in_progress",
       "schema": {
-        "$id": "http://example.com/example.json",
+        "$id": "g2j/task_work_in_progress",
         "type": "object",
         "properties": {
           "issue": {
@@ -201,7 +201,7 @@
     {
       "eventName": "merge_task",
       "schema": {
-        "$id": "http://example.com/example.json",
+        "$id": "g2j/merge_task",
         "type": "object",
         "properties": {
           "issue": {
@@ -278,10 +278,7 @@
             {
               "path": "headers.X-Gitlab-Token[0]",
               "configPath": "gitlab.token",
-              "operator": "Equals",
-              "config": {
-                "$ref": "config"
-              } 
+              "operator": "Equals"                
             },
             {
               "path": "body.object_kind",
@@ -445,6 +442,7 @@
     }
   ],
   "config": {
+    "$id": "config",
     "jira": {
       "auth": "jira-token",
       "host": "example.atlassian.com"
