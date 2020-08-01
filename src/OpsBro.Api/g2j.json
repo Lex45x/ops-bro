@@ -3,7 +3,7 @@
     {
       "eventName": "take_in_progress",
       "schema": {
-        "$id": "http: //example.com/example.json",
+        "$id": "g2j/take_in_progress",
         "type": "object",
         "properties": {
           "issue": {
@@ -151,7 +151,7 @@
     {
       "eventName": "task_work_in_progress",
       "schema": {
-        "$id": "http://example.com/example.json",
+        "$id": "g2j/task_work_in_progress",
         "type": "object",
         "properties": {
           "issue": {
@@ -201,7 +201,7 @@
     {
       "eventName": "merge_task",
       "schema": {
-        "$id": "http://example.com/example.json",
+        "$id": "g2j/merge_task",
         "type": "object",
         "properties": {
           "issue": {
@@ -254,7 +254,7 @@
       "name": "gitlab",
       "extractors": [
         {
-          "name": "push",
+          "comment": "Commits are pushed into branch",
           "eventName": "take_in_progress",
           "extractionRules": [
             {
@@ -278,10 +278,7 @@
             {
               "path": "headers.X-Gitlab-Token[0]",
               "configPath": "gitlab.token",
-              "operator": "Equals",
-              "config": {
-                "$ref": "config"
-              } 
+              "operator": "Equals"                
             },
             {
               "path": "body.object_kind",
@@ -296,7 +293,7 @@
           ]
         },
         {
-          "name": "merge_request_created",
+          "comment": "Merge request created",
           "eventName": "complete_task",
           "extractionRules": [
             {
@@ -335,7 +332,7 @@
           ]
         },
         {
-          "name": "merge_request_completed",
+          "comment": "Merge request WIP status resolved",
           "eventName": "complete_task",
           "extractionRules": [
             {
@@ -374,7 +371,7 @@
           ]
         },
         {
-          "name": "merge_request_take_in_progress",
+          "comment": "WIP status assigned to a Merge Request",
           "eventName": "task_work_in_progress",
           "extractionRules": [
             {
@@ -413,7 +410,7 @@
           ]
         },
         {
-          "name": "merge_request_merged",
+          "comment": "Merge request merged",
           "eventName": "merge_task",
           "extractionRules": [
             {
@@ -445,6 +442,7 @@
     }
   ],
   "config": {
+    "$id": "config",
     "jira": {
       "auth": "jira-token",
       "host": "example.atlassian.com"

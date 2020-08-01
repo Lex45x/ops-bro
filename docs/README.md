@@ -5,7 +5,6 @@
 - [Concept](#concept)
 - [Understanding the Configuration](#understanding-the-configuration)
   - [Types](#types)
-    - [Event](#event)
     - [Request](#request)
     - [Event Context](#event-context)
   - [Listener](#listener)
@@ -29,8 +28,8 @@ You can find docker images in the [Docker Hub](https://hub.docker.com/repository
 ops-bro allows to connect services that have WebHooks to service that have REST API.
 
 1. Service make a call to a specific ops-bro [Listener](#listener).
-2. [Listener](#listener) extract Events from the request using a list of [Extractors](#extractor).
-3. Event then sent to [Event Dispathcer](#event-dispatcher). 
+2. [Listener](#listener) extract events from the request using a list of [Extractors](#extractor).
+3. Event then processed via [Event Dispathcer](#event-dispatcher) and distributed to all [Event Subscribers](#event-subscriber). 
 4. Each [Event Subscriber](#event-subscriber) converts event to HTTP request message and sends it to related service.
 
 See generic flow on the image below.
@@ -48,30 +47,59 @@ Basically, this file represent a JSON object that can be represented via the nex
     "config":{}
 }
 ```
-Where the `listeners` is a collection of Listener and `eventDispatchers` is a collection of Event Dispatcher.  
-`config` is a json object that could hold configuration values for the template.
+Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
+`config` is a json object that could hold [configuration](#config) values for the template.
+
+Example below will describe an integraiton between Gitlab webhooks and Jira transitions.  
+Original template could be found [HERE](../src/OpsBro.Api/g2j.json).
+
+## Recommended initial knowledge
+
+All of the links below will provide basic knowledge to understand what's going on.
+
+* Understanding general idea of [Webhook API](https://en.wikipedia.org/wiki/Webhook).
+* Understanding [REST API](https://en.wikipedia.org/wiki/REST) and [HTTP protocol](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) in general.
+* [JSON](https://en.wikipedia.org/wiki/JSON) is a heart of this application. All data is represented in JSON format.
+* [JSON Path](https://restfulapi.net/json-jsonpath/) act as a main tool of webhooks and events processing.
 
 ## Types
-Types are not defined in the configuration, but are implicitly used to understand the logic under configuration. A list of types are presented as sub-header entries.
-
-### Event
-Event has name and Data object adn represent an message about system state change.
+Configuration is implicitly use the internal application types.  
+Each type represents a data, that might be somehow addressed or used inside the configuration file.
 
 ### Request
 Inside the request object there are three properties:
 * `query` - contains all query parameters
-* `body` - contains actual request body
+* `body` - contains json representation of the request body
 * `headers` - contains request headers
+
+```json
+{
+    "query":{
+        "key":"value"
+    },
+    "body":{},
+    "headers":{
+        "key":"value"
+    }
+}
+```
 
 ### Event Context
 Inside the event context there is two properties:
 * `event` - event data in json
 * `config` - [configuration object](#config)
 
+```json
+{
+    "event":{},
+    "config":{}
+}
+```
+
 ## Listener
 
 Each listener represents a source of incoming HTTP requests.  
-E.g.: You want to build one-way integration between Gitlab and Jira. So, in this case you will be **listen** to Gitlab events an then change state of the Jira issues accordingly. As a result you will create a single Listener, called gitlab.  
+E.g.: You want to build one-way integration between Gitlab and Jira. So, in this case you **listen** to Gitlab events and change state of the Jira issues accordingly. As a result you will create a single Listener, called gitlab.  
 See an example below.
 ```json
 {
@@ -88,9 +116,9 @@ See an example below.
 
 ## Extractor
 
-Each extractor represent a single event that could be extracted from the request to Listener.  
-E.g.: Gitlab listener could provide a bunch of different event to webhook subscriber: commit pushed, merge request created, merge request taken back in progress, merge request completed, merge request merged, etc. 
-So, in this case, each of the listed event will have own extractor.
+Each extractor represent a set of rules used to extract a single type of event from the request to a parent [Listener](#listener).  
+E.g.: Gitlab listener acts as a source of different events: commit pushed, merge request created, merge request taken back in progress, merge request completed, merge request merged, etc. 
+So, in this case, each of the listed event types will have dedicated extractor.
 See an example below.
 ```json
 {
@@ -99,31 +127,31 @@ See an example below.
             "name":"gitlab",
             "extractors":[
                 {
-                    "name":"push",
+                    "comment":"Commits are pushed into branch",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_created",
+                    "comment":"Merge request created",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_completed",
+                    "comment":"Merge request WIP status resolved",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_take_in_progress",
+                    "comment":"WIP status assigned to a Merge Request",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_merged",
+                    "comment":"Merge request merged",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
@@ -135,12 +163,13 @@ See an example below.
 }
 ```
 
+`comment` is used to describe a specific action that happened on the Webhook creator side
 `eventName` is a name of event that will be extracted from request to Listener.  
 `extractionRules` is a set of [Extraction Rule](#extraction-rule) that will be described below.  
 `validationRules` is a set of [Validation Rule](#validation-rule) that helps to ensure that current request body relates exactly to this extractor.  
 
 ### Validation Rule
-Validation rule allows to validate json using [JSON Path](https://restfulapi.net/json-jsonpath/). Token that retrieved via path will be compared to expected value with selected operator. See example below:
+Validation rule allows to validate [Request](#request) using [JSON Path](https://restfulapi.net/json-jsonpath/). Json-token that was retrieved via path will be compared to expected value with selected operator. See example below:
 ```json
 {
     "validationRules":[
@@ -152,38 +181,29 @@ Validation rule allows to validate json using [JSON Path](https://restfulapi.net
         {
               "path": "headers.X-Gitlab-Token[0]",
               "configPath": "gitlab.token",
-              "operator": "Equals",
-              "config": {
-                  "$ref": "config"
-              }
+              "operator": "Equals"
         }
     ]
 }
 ```
 
-`path` is json path in the [request](#request)
+`path` is json path in the [Request](#request)
 
 An example will take first (`0`) `X-Gitlab-Token` header from request and check its equality to `{{token from webhook configuration}}` value.
 
-Also, the value could be provided from the [configuration](#config) object.  
-To use configuration object inside validaiton rules, we have to import it first:  
-```json
-"config": {
-    "$ref": "config"
-}
-```
-Second step would be to set `"configPath": "gitlab.token"` to specify path that has to be used.  
+Also, a comparison value could be provided from the [configuration](#config) object using `configPath` property.  
+This property used to specify path inside [configuration](#config) object.  
 
 Currently, there is two operators with self-explanatory names. 
 * Equals
 * NotEquals
 
-Operators could be applied to single token at the same time - no validation across arrays.
+Operators could be applied only to one json-token at a time - no validation across arrays.
 
 ### Extraction Rule
 
-Extraction rules allows to extract values from request directly to event.
-[JSON Path](https://restfulapi.net/json-jsonpath/) used to find token for extraction as well. See example below:
+Extraction rules allows to specify a way to compose event from [Request](#request).
+[JSON Path](https://restfulapi.net/json-jsonpath/) used to find json-token for extraction as well. See example below:
 ```json
 {
     "extractionRules": [
@@ -210,7 +230,7 @@ Extraction rules allows to extract values from request directly to event.
 `path` is json path in the [request](#request).  
 `property` is name of event property to set. If event already has value in the property then it will be replaced.  
 `type` determines the way to extract specific property:
-* `Copy` copies found json token as is
+* `Copy` copies found json-token as is
 * `FirstRegexMatch` takes a first substring that match specified `pattern`  
 
 ## Event Dispatcher
@@ -228,7 +248,7 @@ Event dispatcher is responsible for dispatch an event with specific name to it's
 ```
 
 `eventName` - the same name as used in [Extractor](#extractor).  
-`schema` - [JSON Schema](https://json-schema.org/) used to guarantee data integrity and structure for event.  
+`schema` - [JSON Schema](https://json-schema.org/) used to guarantee structure of the event.  
 `subscribers` - list of subscribers for event represented by this dispatcher
 
 ## Event Subscriber
@@ -244,17 +264,14 @@ See an example of event subscriber
             "bodyTemplate": {},
             "bodyTemplateRules": [],
             "headerTemplateRules": [],
-            "urlTemplateRules": [],
-            "metadata": {
-                "auth_header": ""
-            }
+            "urlTemplateRules": []
         }
     ]
 }
 ```
 
 ### Template Rule
-Template rule describes how to fill event/metadata json token into predefined template.
+Template rule describes how to fill event/config json-token into predefined template.
 Basically, template rules depends on the template type and so there are difference between them. See types defined below.
 
 #### Url
