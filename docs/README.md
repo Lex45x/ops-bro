@@ -55,12 +55,12 @@ Where the `listeners` is a collection of Listener and `eventDispatchers` is a co
 Types are not defined in the configuration, but are implicitly used to understand the logic under configuration. A list of types are presented as sub-header entries.
 
 ### Event
-Event has name and Data object adn represent an message about system state change.
+Event has name and Data object and represent a message about the system state change.
 
 ### Request
 Inside the request object there are three properties:
 * `query` - contains all query parameters
-* `body` - contains actual request body
+* `body` - contains json representation of the request body
 * `headers` - contains request headers
 
 ### Event Context
@@ -71,7 +71,7 @@ Inside the event context there is two properties:
 ## Listener
 
 Each listener represents a source of incoming HTTP requests.  
-E.g.: You want to build one-way integration between Gitlab and Jira. So, in this case you will be **listen** to Gitlab events an then change state of the Jira issues accordingly. As a result you will create a single Listener, called gitlab.  
+E.g.: You want to build one-way integration between Gitlab and Jira. So, in this case you **listen** to Gitlab events and change state of the Jira issues accordingly. As a result you will create a single Listener, called gitlab.  
 See an example below.
 ```json
 {
@@ -88,9 +88,9 @@ See an example below.
 
 ## Extractor
 
-Each extractor represent a single event that could be extracted from the request to Listener.  
-E.g.: Gitlab listener could provide a bunch of different event to webhook subscriber: commit pushed, merge request created, merge request taken back in progress, merge request completed, merge request merged, etc. 
-So, in this case, each of the listed event will have own extractor.
+Each extractor represent a set of rules used to extract a single type of event from the request to a parent [Listener](#listener).  
+E.g.: Gitlab listener acts as a source of different events: commit pushed, merge request created, merge request taken back in progress, merge request completed, merge request merged, etc. 
+So, in this case, each of the listed event types will have dedicated extractor.
 See an example below.
 ```json
 {
@@ -99,31 +99,31 @@ See an example below.
             "name":"gitlab",
             "extractors":[
                 {
-                    "name":"push",
+                    "comment":"Commits are pushed into branch",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_created",
+                    "comment":"Merge request created",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_completed",
+                    "comment":"Merge request WIP status resolved",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_take_in_progress",
+                    "comment":"WIP status assigned to a Merge Request",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
                 },
                 {
-                    "name":"merge_request_merged",
+                    "comment":"Merge request merged",
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
@@ -135,12 +135,13 @@ See an example below.
 }
 ```
 
+`comment` is used to describe a specific action that happened on the Webhook creator side
 `eventName` is a name of event that will be extracted from request to Listener.  
 `extractionRules` is a set of [Extraction Rule](#extraction-rule) that will be described below.  
 `validationRules` is a set of [Validation Rule](#validation-rule) that helps to ensure that current request body relates exactly to this extractor.  
 
 ### Validation Rule
-Validation rule allows to validate json using [JSON Path](https://restfulapi.net/json-jsonpath/). Token that retrieved via path will be compared to expected value with selected operator. See example below:
+Validation rule allows to validate [Request](#request) using [JSON Path](https://restfulapi.net/json-jsonpath/). Json-token that was retrieved via path will be compared to expected value with selected operator. See example below:
 ```json
 {
     "validationRules":[
@@ -158,23 +159,23 @@ Validation rule allows to validate json using [JSON Path](https://restfulapi.net
 }
 ```
 
-`path` is json path in the [request](#request)
+`path` is json path in the [Request](#request)
 
 An example will take first (`0`) `X-Gitlab-Token` header from request and check its equality to `{{token from webhook configuration}}` value.
 
-Also, the value could be provided from the [configuration](#config) object.  
-To use configuration object inside validaiton rules, we have to set `"configPath": "gitlab.token"` to specify path inside [configuration](#config) object.  
+Also, a comparison value could be provided from the [configuration](#config) object using `configPath` property.  
+This property used to specify path inside [configuration](#config) object.  
 
 Currently, there is two operators with self-explanatory names. 
 * Equals
 * NotEquals
 
-Operators could be applied to single token at the same time - no validation across arrays.
+Operators could be applied only to one json-token at a time - no validation across arrays.
 
 ### Extraction Rule
 
-Extraction rules allows to extract values from request directly to event.
-[JSON Path](https://restfulapi.net/json-jsonpath/) used to find token for extraction as well. See example below:
+Extraction rules allows to specify a way to compose event from [Request](#request).
+[JSON Path](https://restfulapi.net/json-jsonpath/) used to find json-token for extraction as well. See example below:
 ```json
 {
     "extractionRules": [
@@ -201,7 +202,7 @@ Extraction rules allows to extract values from request directly to event.
 `path` is json path in the [request](#request).  
 `property` is name of event property to set. If event already has value in the property then it will be replaced.  
 `type` determines the way to extract specific property:
-* `Copy` copies found json token as is
+* `Copy` copies found json-token as is
 * `FirstRegexMatch` takes a first substring that match specified `pattern`  
 
 ## Event Dispatcher
@@ -219,7 +220,7 @@ Event dispatcher is responsible for dispatch an event with specific name to it's
 ```
 
 `eventName` - the same name as used in [Extractor](#extractor).  
-`schema` - [JSON Schema](https://json-schema.org/) used to guarantee data integrity and structure for event.  
+`schema` - [JSON Schema](https://json-schema.org/) used to guarantee structure of the event.  
 `subscribers` - list of subscribers for event represented by this dispatcher
 
 ## Event Subscriber
@@ -235,17 +236,14 @@ See an example of event subscriber
             "bodyTemplate": {},
             "bodyTemplateRules": [],
             "headerTemplateRules": [],
-            "urlTemplateRules": [],
-            "metadata": {
-                "auth_header": ""
-            }
+            "urlTemplateRules": []
         }
     ]
 }
 ```
 
 ### Template Rule
-Template rule describes how to fill event/metadata json token into predefined template.
+Template rule describes how to fill event/config json-token into predefined template.
 Basically, template rules depends on the template type and so there are difference between them. See types defined below.
 
 #### Url

@@ -254,7 +254,7 @@
       "name": "gitlab",
       "extractors": [
         {
-          "name": "push",
+          "comment": "Commits are pushed into branch",
           "eventName": "take_in_progress",
           "extractionRules": [
             {
@@ -293,7 +293,7 @@
           ]
         },
         {
-          "name": "merge_request_created",
+          "comment": "Merge request created",
           "eventName": "complete_task",
           "extractionRules": [
             {
@@ -332,7 +332,7 @@
           ]
         },
         {
-          "name": "merge_request_completed",
+          "comment": "Merge request WIP status resolved",
           "eventName": "complete_task",
           "extractionRules": [
             {
@@ -371,7 +371,7 @@
           ]
         },
         {
-          "name": "merge_request_take_in_progress",
+          "comment": "WIP status assigned to a Merge Request",
           "eventName": "task_work_in_progress",
           "extractionRules": [
             {
@@ -410,7 +410,7 @@
           ]
         },
         {
-          "name": "merge_request_merged",
+          "comment": "Merge request merged",
           "eventName": "merge_task",
           "extractionRules": [
             {

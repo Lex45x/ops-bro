@@ -15,10 +15,10 @@ namespace OpsBro.Domain.Extraction
     /// </summary>
     public class Extractor
     {
-        public Extractor(string name, string eventName, ICollection<ExtractionRule> extractionRules,
+        public Extractor(string comment, string eventName, ICollection<ExtractionRule> extractionRules,
             ICollection<ValidationRule> validationRules)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Comment = comment ?? throw new ArgumentNullException(nameof(comment));
             EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
             ExtractionRules = extractionRules ?? throw new ArgumentNullException(nameof(extractionRules));
             ValidationRules = validationRules ?? throw new ArgumentNullException(nameof(validationRules));
@@ -42,9 +42,9 @@ namespace OpsBro.Domain.Extraction
         }
 
         /// <summary>
-        /// The name of a Extractor
+        /// Description of the specific extractor
         /// </summary>
-        public string Name { get; }
+        public string Comment { get; }
 
         /// <summary>
         /// Name of Event that will be extracted as a result
