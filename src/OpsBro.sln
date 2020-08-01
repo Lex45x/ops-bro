@@ -13,12 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpsBro.Domain.Tests", "OpsB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpsBro.Api", "OpsBro.Api\OpsBro.Api.csproj", "{9F977244-CBEF-41CA-9DC5-FCDC231AC618}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Docs", "0. Docs", "{0740241F-8B2D-45CC-9753-54F8922E56E1}"
-	ProjectSection(SolutionItems) = preProject
-		..\docs\concept flow.jpg = ..\docs\concept flow.jpg
-		..\docs\README.md = ..\docs\README.md
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
