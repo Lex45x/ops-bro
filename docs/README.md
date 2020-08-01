@@ -5,7 +5,6 @@
 - [Concept](#concept)
 - [Understanding the Configuration](#understanding-the-configuration)
   - [Types](#types)
-    - [Event](#event)
     - [Request](#request)
     - [Event Context](#event-context)
   - [Listener](#listener)
@@ -29,8 +28,8 @@ You can find docker images in the [Docker Hub](https://hub.docker.com/repository
 ops-bro allows to connect services that have WebHooks to service that have REST API.
 
 1. Service make a call to a specific ops-bro [Listener](#listener).
-2. [Listener](#listener) extract Events from the request using a list of [Extractors](#extractor).
-3. Event then sent to [Event Dispathcer](#event-dispatcher). 
+2. [Listener](#listener) extract events from the request using a list of [Extractors](#extractor).
+3. Event then processed via [Event Dispathcer](#event-dispatcher) and distributed to all [Event Subscribers](#event-subscriber). 
 4. Each [Event Subscriber](#event-subscriber) converts event to HTTP request message and sends it to related service.
 
 See generic flow on the image below.
@@ -48,14 +47,24 @@ Basically, this file represent a JSON object that can be represented via the nex
     "config":{}
 }
 ```
-Where the `listeners` is a collection of Listener and `eventDispatchers` is a collection of Event Dispatcher.  
-`config` is a json object that could hold configuration values for the template.
+Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
+`config` is a json object that could hold [configuration](#config) values for the template.
+
+Example below will describe an integraiton between Gitlab webhooks and Jira transitions.  
+Original template could be found [HERE](../src/OpsBro.Api/g2j.json).
+
+## Recommended initial knowledge
+
+All of the links below will provide basic knowledge to understand what's going on.
+
+* Understanding general idea of [Webhook API](https://en.wikipedia.org/wiki/Webhook).
+* Understanding [REST API](https://en.wikipedia.org/wiki/REST) and [HTTP protocol](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) in general.
+* [JSON](https://en.wikipedia.org/wiki/JSON) is a heart of this application. All data is represented in JSON format.
+* [JSON Path](https://restfulapi.net/json-jsonpath/) act as a main tool of webhooks and events processing.
 
 ## Types
-Types are not defined in the configuration, but are implicitly used to understand the logic under configuration. A list of types are presented as sub-header entries.
-
-### Event
-Event has name and Data object and represent a message about the system state change.
+Configuration is implicitly use the internal application types.  
+Each type represents a data, that might be somehow addressed or used inside the configuration file.
 
 ### Request
 Inside the request object there are three properties:
@@ -63,10 +72,29 @@ Inside the request object there are three properties:
 * `body` - contains json representation of the request body
 * `headers` - contains request headers
 
+```json
+{
+    "query":{
+        "key":"value"
+    },
+    "body":{},
+    "headers":{
+        "key":"value"
+    }
+}
+```
+
 ### Event Context
 Inside the event context there is two properties:
 * `event` - event data in json
 * `config` - [configuration object](#config)
+
+```json
+{
+    "event":{},
+    "config":{}
+}
+```
 
 ## Listener
 
