@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using Prometheus;
 
 namespace OpsBro.Domain.Events
 {
@@ -11,6 +12,11 @@ namespace OpsBro.Domain.Events
     /// </summary>
     public class EventDispatcher
     {
+        private static readonly Counter eventsDispathcedCounter = Metrics.CreateCounter("events_dispatched", "Represent amount of dispatched events", new CounterConfiguration
+        {
+            LabelNames = new[] { "event_name" }
+        });
+
         public EventDispatcher(string eventName, JSchema schema, ICollection<EventSubscriber> subscribers)
         {
             EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
@@ -42,6 +48,7 @@ namespace OpsBro.Domain.Events
         /// <returns></returns>
         public async Task Dispatch(Event extractedEvent, JObject config)
         {
+
             if (extractedEvent == null)
             {
                 throw new ArgumentNullException(nameof(extractedEvent));
@@ -54,6 +61,8 @@ namespace OpsBro.Domain.Events
             }
 
             extractedEvent.Data.Validate(Schema);
+
+            eventsDispathcedCounter.WithLabels(EventName).Inc();
 
             foreach (var subscriber in Subscribers)
             {

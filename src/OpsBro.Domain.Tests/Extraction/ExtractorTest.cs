@@ -17,7 +17,7 @@ namespace OpsBro.Domain.Tests.Extraction
         public void Constructor_ArgumentValidation()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                new Extractor(name: null, "", new List<ExtractionRule>(), new List<ValidationRule>()));
+                new Extractor(null, "", new List<ExtractionRule>(), new List<ValidationRule>()));
             Assert.Throws<ArgumentNullException>(() =>
                 new Extractor("", eventName: null, new List<ExtractionRule>(), new List<ValidationRule>()));
             Assert.Throws<ArgumentNullException>(() =>

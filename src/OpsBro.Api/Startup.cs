@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 
 namespace OpsBro.Api
 {
@@ -55,7 +56,14 @@ namespace OpsBro.Api
 
             app.UseCors(_corsPolicyName);
             app.UseRouting();
-            app.UseEndpoints(builder => builder.MapControllers());
+
+            app.UseHttpMetrics();
+
+            app.UseEndpoints(builder =>
+            {
+                builder.MapControllers();
+                builder.MapMetrics();
+            });
         }
     }
 }
