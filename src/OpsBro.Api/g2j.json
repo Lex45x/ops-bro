@@ -11,24 +11,24 @@
             "type": "string",
             "title": "TheIssueSchema",
             "default": "",
-            "examples": ["SH-123"]
+            "examples": [ "SH-123" ]
           },
           "author": {
             "$id": "/properties/author",
             "type": "string",
             "title": "TheAuthorSchema",
             "default": "",
-            "examples": ["alex.redka"]
+            "examples": [ "alex.redka" ]
           },
           "ref": {
             "$id": "/properties/ref",
             "type": "string",
             "title": "TheRefSchema",
             "default": "",
-            "examples": ["refs/heads/develo"]
+            "examples": [ "refs/heads/develo" ]
           }
         },
-        "required": ["issue", "author", "ref"]
+        "required": [ "issue", "author", "ref" ]
       },
       "subscribers": [
         {
@@ -94,17 +94,17 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           },
           "url": {
             "$id": "/properties/url",
             "type": "string",
             "title": "The Url Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           }
         },
-        "required": ["issue", "url"]
+        "required": [ "issue", "url" ]
       },
       "subscribers": [
         {
@@ -159,10 +159,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           }
         },
-        "required": ["issue"]
+        "required": [ "issue" ]
       },
       "subscribers": [
         {
@@ -209,10 +209,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           }
         },
-        "required": ["issue"]
+        "required": [ "issue" ]
       },
       "subscribers": [
         {
@@ -278,7 +278,7 @@
             {
               "path": "headers.X-Gitlab-Token[0]",
               "configPath": "gitlab.token",
-              "operator": "Equals"                
+              "operator": "Equals"
             },
             {
               "path": "body.object_kind",
