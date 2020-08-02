@@ -22,6 +22,25 @@
 # Get Started with Docker Image
 
 You can find docker images in the [Docker Hub](https://hub.docker.com/repository/docker/opsbro/ops-bro).  
+Docker image tags are the same as tags in the repository.
+Each commit to `develop` branch has own docker image `develop/$commit-short-sha`.  
+This is done for contributors that don't want to wait 'till their changes appear in main release.
+
+## Environment variables
+
+Currently, only one environment variable is supported:  
+`JSON_FILE_URL` - is Http URL or filesystem path to JSON configuration file.
+
+## Example
+
+The command below will start OpsBro 0.2 container with valid configuration from repository. 
+
+```sh
+docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.2/src/OpsBro.Api/g2j.json" -p 8080:80 opsbro/ops-bro:0.2
+```
+
+After successfull image start you can navigate to `localhost:8080` and see [Swagger Documentation](https://swagger.io/).
+
 
 # Concept
 
