@@ -23,7 +23,7 @@
 
 You can find docker images in the [Docker Hub](https://hub.docker.com/repository/docker/opsbro/ops-bro).  
 Docker image tags are the same as tags in the repository.
-Each commit to `develop` branch has own docker image `develop:$commit-short-sha`.  
+Each commit to `develop` branch has own docker image with tag `develop-$commit-short-sha`.  
 This is done for contributors that don't want to wait 'till their changes appear in main release.
 
 ## Environment variables

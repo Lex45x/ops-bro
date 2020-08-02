@@ -32,7 +32,5 @@ build_image_develop:
   before_script:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
-  - docker build -t $IMAGE_NAME/develop:$CI_COMMIT_SHORT_SHA ./src
-  - docker tag $IMAGE_NAME/develop:$CI_COMMIT_SHORT_SHA $IMAGE_NAME/develop:latest
-  - docker push $IMAGE_NAME/develop:$CI_COMMIT_SHORT_SHA
-  - docker push $IMAGE_NAME/develop:latest
+  - docker build -t $IMAGE_NAME:develop-$CI_COMMIT_SHORT_SHA ./src
+  - docker push $IMAGE_NAME:develop-$CI_COMMIT_SHORT_SHA
