@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using OpsBro.Api.Swagger;
 using Prometheus;
 
 namespace OpsBro.Api
@@ -36,6 +37,7 @@ namespace OpsBro.Api
                     Version = "v0.1",
                     Title = "ops-bro"
                 });
+                options.DocumentFilter<PrometheusMetricsDocumentFilter>();
             });
 
             services.AddSingleton(Program.Settings);
