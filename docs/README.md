@@ -352,3 +352,13 @@ It can hold any value and may be imported into [validation rules](#validation-ru
         "token": "gitlab-token"
     }
 ```
+
+# Troubleshooting and debug
+
+OpsBro has several mechanisms that will help you to understand that somehting is going wrong.
+
+## Prometheus and metrics
+
+OpsBro has built-in support for Prometheus metrics.  
+They are available on default `/metrics` route.  
+More details about metrics could be found in dedicated [metrics specification](/METRICS.md)

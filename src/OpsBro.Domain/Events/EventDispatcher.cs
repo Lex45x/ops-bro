@@ -17,6 +17,11 @@ namespace OpsBro.Domain.Events
             LabelNames = new[] { "event_name" }
         });
 
+        private static readonly Counter failedEventSubscriptionCounter = Metrics.CreateCounter("failed_event_subscription", "Represent amount of exceptions thrown by EventSubscriber", new CounterConfiguration
+        {
+            LabelNames = new[] { "event_name"}
+        });
+
         public EventDispatcher(string eventName, JSchema schema, ICollection<EventSubscriber> subscribers)
         {
             EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
@@ -72,6 +77,8 @@ namespace OpsBro.Domain.Events
                 }
                 catch (Exception e)
                 {
+                    failedEventSubscriptionCounter.WithLabels(EventName).Inc();
+
                     //todo: logs gonna here
                     Console.WriteLine(e);
                 }

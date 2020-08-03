@@ -8,12 +8,18 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpsBro.Domain.Settings;
+using Prometheus;
 
 namespace OpsBro.Api.Controllers
 {
     [Route("api/{listenerName}")]
     public class ListenerController : ControllerBase
     {
+        private static readonly Counter eventsWithoutDispatcherCounter = Metrics.CreateCounter("events_without_dispatcher", "Represent amount of events that don't have a dispatcher", new CounterConfiguration
+        {
+            LabelNames = new[] { "listener_name", "event_name" }
+        });
+
         private readonly ISettings settings;
 
         public ListenerController(ISettings settings)
@@ -40,6 +46,7 @@ namespace OpsBro.Api.Controllers
 
                 if (eventDispatcher == null)
                 {
+                    eventsWithoutDispatcherCounter.WithLabels(listenerName, @event.Name).Inc();
                     continue;
                 }
 
