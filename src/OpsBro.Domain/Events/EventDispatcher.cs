@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using NLog;
 using Prometheus;
 
 namespace OpsBro.Domain.Events
@@ -12,6 +13,8 @@ namespace OpsBro.Domain.Events
     /// </summary>
     public class EventDispatcher
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         private static readonly Counter eventsDispathcedCounter = Metrics.CreateCounter("events_dispatched", "Represent amount of dispatched events", new CounterConfiguration
         {
             LabelNames = new[] { "event_name" }
@@ -20,6 +23,11 @@ namespace OpsBro.Domain.Events
         private static readonly Counter failedEventSubscriptionCounter = Metrics.CreateCounter("failed_event_subscription", "Represent amount of exceptions thrown by EventSubscriber", new CounterConfiguration
         {
             LabelNames = new[] { "event_name"}
+        });
+
+        private static readonly Counter eventsWithInvalidSchemaCounter = Metrics.CreateCounter("events_with_invalid_schema", "Represent amount of exceptions thrown by EventSubscriber", new CounterConfiguration
+        {
+            LabelNames = new[] { "event_name" }
         });
 
         public EventDispatcher(string eventName, JSchema schema, ICollection<EventSubscriber> subscribers)
@@ -53,7 +61,6 @@ namespace OpsBro.Domain.Events
         /// <returns></returns>
         public async Task Dispatch(Event extractedEvent, JObject config)
         {
-
             if (extractedEvent == null)
             {
                 throw new ArgumentNullException(nameof(extractedEvent));
@@ -65,7 +72,14 @@ namespace OpsBro.Domain.Events
                     $"Invalid event name. {EventName} expected, got {extractedEvent.Name}");
             }
 
-            extractedEvent.Data.Validate(Schema);
+            var eventValid = extractedEvent.Data.IsValid(Schema);
+
+            if (!eventValid)
+            {
+                logger.Error("Event with name {name} and data {event} has invalid schema.", extractedEvent.Name, extractedEvent.Data);
+                eventsWithInvalidSchemaCounter.WithLabels(extractedEvent.Name).Inc();
+                return;
+            }
 
             eventsDispathcedCounter.WithLabels(EventName).Inc();
 
@@ -78,9 +92,7 @@ namespace OpsBro.Domain.Events
                 catch (Exception e)
                 {
                     failedEventSubscriptionCounter.WithLabels(EventName).Inc();
-
-                    //todo: logs gonna here
-                    Console.WriteLine(e);
+                    logger.Error(e, "Event subscriber was unable to handle event!");
                 }
             }
         }

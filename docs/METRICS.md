@@ -44,4 +44,14 @@ Expected: to be zero for the whole application lifetime. Values greater then zer
 Labels:  
 * `event_name` contains name of event that has been extracted.
 
+### calls_without_listener
+`calls_without_listener` contains amount of calls to OpsBro where listener with specified name was not found.
+Expected: to be zero for the whole application lifetime. Values greater then zero may be misconfiguration signal as well as attack attempt.
+
+### events_with_invalid_schema
+`events_with_invalid_schema` contains amount of events that has been extracted but had invalid schema.
+Expected: to be zero for the whole application lifetime. Values greater then zero are misconfiguration signal.    
+Labels:  
+* `event_name` contains name of event that has been extracted.
+
 

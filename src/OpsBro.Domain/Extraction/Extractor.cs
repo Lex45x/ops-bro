@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using FluentValidation;
 using Newtonsoft.Json.Linq;
+using NLog;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction.Rules;
 using OpsBro.Domain.Extraction.Validation;
@@ -15,6 +17,7 @@ namespace OpsBro.Domain.Extraction
     /// </summary>
     public class Extractor
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public Extractor(string comment, string eventName, ICollection<ExtractionRule> extractionRules,
             ICollection<ValidationRule> validationRules)
         {
@@ -80,6 +83,10 @@ namespace OpsBro.Domain.Extraction
 
             if (!validationResult.IsValid)
             {
+                logger.Debug("Event extraction interrupted with validation failure.", validationResult.Errors.Aggregate(
+                    new StringBuilder(),
+                    (builder, failure) => builder.AppendLine(failure.ErrorMessage)));
+
                 extractedEvent = null;
                 return false;
             }
@@ -88,6 +95,8 @@ namespace OpsBro.Domain.Extraction
                 (current, extractionRule) => extractionRule.ApplyRule(current, payload));
 
             extractedEvent = new Event(EventName, eventData);
+
+            logger.Debug("Event extracted! {event}", extractedEvent);
 
             return true;
         }
