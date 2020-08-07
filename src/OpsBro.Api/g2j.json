@@ -442,7 +442,6 @@
     }
   ],
   "config": {
-    "$id": "config",
     "jira": {
       "auth": "jira-token",
       "host": "example.atlassian.com"
