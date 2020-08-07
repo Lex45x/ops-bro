@@ -66,10 +66,11 @@ See generic flow on the image below.
 
 # Understanding the Configuration
 
-Application could be configured with only one way: via JSON configuration file.
+There is only one way to configure an applicaiton: via JSON configuration file.
 Basically, this file represent a JSON object that can be represented via the next example.
 ```json
 {
+    "version":"",
     "listeners":[],
     "eventDispatchers":[],
     "config":{}
@@ -77,6 +78,7 @@ Basically, this file represent a JSON object that can be represented via the nex
 ```
 Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
 `config` is a json object that could hold [configuration](#config) values for the template.
+`version` used to maintain compatibility between OpsBro version and configuraiton file version.
 
 Example below will describe an integraiton between Gitlab webhooks and Jira transitions.  
 Original template could be found [HERE](../src/OpsBro.Api/g2j.json).
@@ -123,6 +125,13 @@ Inside the event context there is two properties:
     "config":{}
 }
 ```
+
+## Versioning
+
+`version` field in the root of configuraiton file is responsible for expression of the compatible OpsBro version.  
+Version field value corresponds to OpsBro releases.  
+If the version from configuration file is missmatch OpBro version - applicaiton will fail with Config serialization exception.  
+If you need to have OpsBro working with different versions of the configuration file - you have to use multiple instances of OpsBro - one per version.
 
 ## Listener
 

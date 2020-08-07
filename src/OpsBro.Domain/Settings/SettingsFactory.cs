@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using NLog;
 using OpsBro.Domain.Extraction.Validation;
 
@@ -36,7 +39,14 @@ namespace OpsBro.Domain.Settings
 
             logger.Debug("Configuraiton file content: {configuration}", configuration);
 
-            var settings = JsonConvert.DeserializeObject<Settings>(configuration, serializerSettings);
+            var configurationObject = JObject.Parse(configuration);
+
+            var settingsSchemaJson = File.ReadAllText("settings-schema.json");
+
+            var schema = JSchema.Parse(settingsSchemaJson);
+            configurationObject.Validate(schema);
+                        
+            var settings = configurationObject.ToObject<Settings>(JsonSerializer.Create(serializerSettings));
             ConfigValidationRule.Config = settings.Config;
 
             logger.Info("Settings object deserialized!");
