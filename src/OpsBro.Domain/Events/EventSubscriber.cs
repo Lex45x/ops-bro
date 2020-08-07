@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using NLog;
 using OpsBro.Domain.Events.Templates;
 
 namespace OpsBro.Domain.Events
@@ -15,6 +16,7 @@ namespace OpsBro.Domain.Events
     /// </summary>
     public class EventSubscriber
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         private readonly JObject bodyTemplate;
 
         public EventSubscriber(string urlTemplate, HttpMethod method, JObject bodyTemplate,
@@ -82,8 +84,12 @@ namespace OpsBro.Domain.Events
             var url = UrlTemplateRules.Aggregate(UrlTemplate,
                 (current, urlTemplateRule) => urlTemplateRule.Apply(current, model));
 
+            logger.Debug("Url template filled: {url}", url);
+
             var body = BodyTemplateRules.Aggregate(BodyTemplate,
                 (current, bodyTemplateRule) => bodyTemplateRule.Apply(current, model));
+
+            logger.Debug("Body template filled: {body}", body);
 
             var httpRequestMessage = new HttpRequestMessage
             {
@@ -97,9 +103,18 @@ namespace OpsBro.Domain.Events
                 headerTemplateRule.Apply(httpRequestMessage.Headers, model);
             }
 
+            logger.Debug("Headers template filled: {header}", httpRequestMessage.Headers);
+
             using var httpClient = new HttpClient();
+
             var responseMessage =
                 await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
+
+            if (logger.IsDebugEnabled)
+            {
+                var content = await responseMessage.Content.ReadAsStringAsync();
+                logger.Debug("Http request sent! Response: {content}", content);
+            }            
 
             responseMessage.EnsureSuccessStatusCode();
         }

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using OpsBro.Api.Swagger;
+using Prometheus;
 
 namespace OpsBro.Api
 {
@@ -35,6 +37,8 @@ namespace OpsBro.Api
                     Version = "v0.1",
                     Title = "ops-bro"
                 });
+                options.DocumentFilter<PrometheusMetricsDocumentFilter>();
+                options.OperationFilter<ListenerCallDocumentFilter>();
             });
 
             services.AddSingleton(Program.Settings);
@@ -55,7 +59,14 @@ namespace OpsBro.Api
 
             app.UseCors(_corsPolicyName);
             app.UseRouting();
-            app.UseEndpoints(builder => builder.MapControllers());
+
+            app.UseHttpMetrics();
+
+            app.UseEndpoints(builder =>
+            {
+                builder.MapControllers();
+                builder.MapMetrics();
+            });
         }
     }
 }
