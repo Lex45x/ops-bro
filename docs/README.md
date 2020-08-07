@@ -28,8 +28,9 @@ This is done for contributors that don't want to wait 'till their changes appear
 
 ## Environment variables
 
-Currently, only one environment variable is supported:  
-`JSON_FILE_URL` - is Http URL or filesystem path to JSON configuration file.  
+Here is the list of supported environment variables:  
+`JSON_FILE_URL` - is Http URL or filesystem path to JSON configuration file.
+`LOG_LEVEL` - is [NLog Log level](https://github.com/NLog/NLog/wiki/Configuration-file#log-levels) string. If nothing is set - Info will be a default. Use `Debug` level for configuraiton debugging.
 This allows you to download configuration from secured sources like [Amazon S3](https://aws.amazon.com/s3/), or put file into attached [docker volume](https://docs.docker.com/storage/volumes/).
 **Notice** that if your HTTP resource require authorization to download files, OpsBro can be authorized using query string only!
 

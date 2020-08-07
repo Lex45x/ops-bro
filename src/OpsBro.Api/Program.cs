@@ -15,16 +15,7 @@ namespace OpsBro.Api
     {
         public static async Task Main(string[] args)
         {
-            var config = new ConfigurationBuilder()
-               .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-               .Build();
-
-            LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
-            
-            var logger = LogManager.GetCurrentClassLogger();
-
-            logger.Info("Welcome to OpsBro! -- this message means that logging is configured and working correctly");
+            Logger logger = InitializeLogging();
 
             try
             {
@@ -38,6 +29,32 @@ namespace OpsBro.Api
             }
 
             BuildWebHost(args).Run();
+        }
+
+        private static Logger InitializeLogging()
+        {
+            var config = new ConfigurationBuilder()
+                           .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                           .Build();
+
+            LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
+
+            var logLevel = Environment.GetEnvironmentVariable("LOG_LEVEL");
+
+            if (logLevel == null)
+            {
+                LogManager.GlobalThreshold = NLog.LogLevel.Info;
+            }
+            else
+            {
+                LogManager.GlobalThreshold = NLog.LogLevel.FromString(logLevel);
+            }
+
+            var logger = LogManager.GetCurrentClassLogger();
+
+            logger.Info("Welcome to OpsBro! -- this message means that logging is configured and working correctly");
+            return logger;
         }
 
         public static ISettings Settings { get; private set; }
