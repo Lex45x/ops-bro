@@ -38,6 +38,7 @@ namespace OpsBro.Api
                     Title = "ops-bro"
                 });
                 options.DocumentFilter<PrometheusMetricsDocumentFilter>();
+                options.OperationFilter<ListenerCallDocumentFilter>();
             });
 
             services.AddSingleton(Program.Settings);

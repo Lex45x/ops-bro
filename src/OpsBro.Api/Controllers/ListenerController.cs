@@ -32,9 +32,9 @@ namespace OpsBro.Api.Controllers
         }
 
         [HttpPost]
-        public async Task Call([FromRoute] string listenerName, [FromBody] JObject body, [FromQuery] JObject query)
+        public async Task Call([FromRoute] string listenerName, [FromBody] JObject body)
         {
-            logger.Debug("Received call to listener {listener}. Body: {body}. Query: {query}.", listenerName, body, query);
+            logger.Debug("Received call to listener {listener}.", listenerName);
 
             var listenerFound = settings.ListenersByListenerName.TryGetValue(listenerName, out var listener);
 
@@ -47,7 +47,7 @@ namespace OpsBro.Api.Controllers
 
             var payload = new JObject
             {
-                ["query"] = query,
+                ["query"] = JToken.FromObject(Request.Query.ToDictionary(entry => entry.Key, entry => entry.Value)),
                 ["body"] = body,
                 ["headers"] = JToken.FromObject(Request.Headers)
             };
