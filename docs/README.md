@@ -371,4 +371,4 @@ OpsBro has several mechanisms that will help you to understand that somehting is
 
 OpsBro has built-in support for Prometheus metrics.  
 They are available on default `/metrics` route.  
-More details about metrics could be found in dedicated [metrics specification](docs/METRICS.md)
+More details about metrics could be found in dedicated [metrics specification](/docs/METRICS.md)
