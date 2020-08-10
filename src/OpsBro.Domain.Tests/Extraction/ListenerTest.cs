@@ -8,6 +8,7 @@ using NUnit.Framework;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction;
 using OpsBro.Domain.Extraction.Rules;
+using OpsBro.Domain.Extraction.UnnestingRules;
 using OpsBro.Domain.Extraction.Validation;
 
 namespace OpsBro.Domain.Tests.Extraction
@@ -18,14 +19,14 @@ namespace OpsBro.Domain.Tests.Extraction
         [Test]
         public void Constructor_ArgumentValidation()
         {
-            Assert.Throws<ArgumentNullException>(() => new Listener(null, new List<Extractor>()));
-            Assert.Throws<ArgumentNullException>(() => new Listener("", null));
+            Assert.Throws<ArgumentNullException>(() => new Listener(null, new List<Extractor>(), new List<UnnestingRule>()));
+            Assert.Throws<ArgumentNullException>(() => new Listener("", null, new List<UnnestingRule>()));
         }
 
         [Test]
         public void ExtractAll_ArgumentValidation()
         {
-            var listener = new Listener("", new List<Extractor>());
+            var listener = new Listener("", new List<Extractor>(), new List<UnnestingRule>());
             Assert.Throws<ArgumentNullException>(() => listener.ExtractAll(null).ToList());
         }
 
@@ -46,7 +47,7 @@ namespace OpsBro.Domain.Tests.Extraction
                 firstExtractor,
                 secondExtractor,
                 thirdExtractor
-            });
+            }, new List<UnnestingRule>());
 
             var payload = new JObject();
             ICollection<Event> extractedEvents = null;

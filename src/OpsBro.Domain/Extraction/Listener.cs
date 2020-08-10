@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using OpsBro.Domain.Events;
+using OpsBro.Domain.Extraction.UnnestingRules;
 using Prometheus;
 
 namespace OpsBro.Domain.Extraction
@@ -26,10 +28,11 @@ namespace OpsBro.Domain.Extraction
             LabelNames = new[] { "listener_name", "event_name" }
         });
 
-        public Listener(string name, ICollection<Extractor> extractors)
+        public Listener(string name, ICollection<Extractor> extractors, ICollection<UnnestingRule> unnestingRules)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Extractors = extractors ?? throw new ArgumentNullException(nameof(extractors));
+            UnnestingRules = unnestingRules ?? throw new ArgumentNullException(nameof(unnestingRules));
         }
 
         /// <summary>
@@ -38,7 +41,12 @@ namespace OpsBro.Domain.Extraction
         public ICollection<Extractor> Extractors { get; }
 
         /// <summary>
-        /// Extract all possible event from the payload
+        /// A list of unnesting rules for the request.
+        /// </summary>
+        public ICollection<UnnestingRule> UnnestingRules { get; }
+
+        /// <summary>
+        /// Extract all possible events from the payload
         /// </summary>
         /// <param name="payload">Payload to extract from</param>
         /// <returns>All extracted events</returns>
@@ -51,13 +59,23 @@ namespace OpsBro.Domain.Extraction
 
             listenerCallsCounter.WithLabels(Name).Inc();
 
-            foreach (var extractor in Extractors)
-            {
-                if (extractor.TryExtract(payload, out var extractedEvent))
-                {
-                    extractedEventsCounter.WithLabels(Name, extractedEvent.Name).Inc();
+            IEnumerable<JObject> payloads = Enumerable.Repeat(payload, 1);
 
-                    yield return extractedEvent;
+            if (UnnestingRules.Any())
+            {
+                payloads = UnnestingRules.Aggregate(payloads, (payloads, rule) => payloads.SelectMany(payload => rule.Unnest(payload)));
+            }
+
+            foreach (var unnestedPayload in payloads)
+            {
+                foreach (var extractor in Extractors)
+                {
+                    if (extractor.TryExtract(unnestedPayload, out var extractedEvent))
+                    {
+                        extractedEventsCounter.WithLabels(Name, extractedEvent.Name).Inc();
+
+                        yield return extractedEvent;
+                    }
                 }
             }
         }

@@ -12,6 +12,7 @@
     + [Event Context](#event-context)
   * [Versioning](#versioning)
   * [Listener](#listener)
+    + [Unnesting rule](#unnesting-rule)
   * [Extractor](#extractor)
     + [Validation Rule](#validation-rule)
     + [Extraction Rule](#extraction-rule)
@@ -109,6 +110,7 @@ Inside the request object there are three properties:
 * `query` - contains all query parameters
 * `body` - contains json representation of the request body
 * `headers` - contains request headers
+* `unnest` - contains the resluts of [Unnesting Rule](#unnesting-rule)
 
 ```json
 {
@@ -118,7 +120,8 @@ Inside the request object there are three properties:
     "body":{},
     "headers":{
         "key":"value"
-    }
+    },
+	"unnest":{}
 }
 ```
 
@@ -151,6 +154,7 @@ See the example below.
     "listeners":[
         {
             "name":"gitlab",
+			"unnestingRules":[],
             "extractors":[]            
         }
     ],
@@ -158,6 +162,41 @@ See the example below.
 }
 ```
 `extractors` is a list of [Extractor](#extractor) that is described below.
+
+### Unnesting rule
+
+This feature name was inspired by PL/pgSQL array funciton [unnest](https://www.postgresql.org/docs/9.1/functions-array.html).  
+Unnesting rules allows to process a single listener call as a sequence of listener calls.
+Unnest operation will be applied to [Request](#request) object.
+
+```json
+{
+    "listeners":[
+        {
+            "name":"gitlab",
+			"unnestingRules": [
+			  {
+				"type": "PerRegexMatch",
+				"path": "body.object_attributes.source_branch",
+				"pattern": "[A-Z]{1,10}-\\d{1,10}",
+				"target": "issue"
+			  }
+			],
+            "extractors":[]            
+        }
+    ],
+    "eventDispatchers":[]
+}
+```
+
+`"type": "PerRegexMatch"` - right now only one unnest type is allowed. It will unnest array of all macthes of regex in property specified via Path.  
+`path` - [JSON Path](https://restfulapi.net/json-jsonpath/) used to find json-token for matching.  
+`pattern` - Regex itself.  
+`target` - name of the property for each unnesting entry. All properties will be created in `unnest` property of [Request](#request) object.  
+
+In the given example, call to Gitlab listener with `source_branch` may containing multiple JIRA Issue keys will be unnested to multiple calls with unnest.issue set to regex match.   
+Notice, that unnesting rules can be stacked. In the result you will have [Cartesian product](https://en.wikipedia.org/wiki/Cartesian_product) of all regex matches.
+Also, if property defined in unnesting rule is not found - in the result will be a single unchanged payload.
 
 ## Extractor
 
