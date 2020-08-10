@@ -2,22 +2,28 @@
 
 - [Documentation Index](#documentation-index)
 - [Get Started with Docker Image](#get-started-with-docker-image)
+  * [Environment variables](#environment-variables)
+  * [Example](#example)
 - [Concept](#concept)
 - [Understanding the Configuration](#understanding-the-configuration)
-  - [Types](#types)
-    - [Request](#request)
-    - [Event Context](#event-context)
-  - [Listener](#listener)
-  - [Extractor](#extractor)
-    - [Validation Rule](#validation-rule)
-    - [Extraction Rule](#extraction-rule)
-  - [Event Dispatcher](#event-dispatcher)
-  - [Event Subscriber](#event-subscriber)
-    - [Template Rule](#template-rule)
+  * [Recommended initial knowledge](#recommended-initial-knowledge)
+  * [Types](#types)
+    + [Request](#request)
+    + [Event Context](#event-context)
+  * [Versioning](#versioning)
+  * [Listener](#listener)
+  * [Extractor](#extractor)
+    + [Validation Rule](#validation-rule)
+    + [Extraction Rule](#extraction-rule)
+  * [Event Dispatcher](#event-dispatcher)
+  * [Event Subscriber](#event-subscriber)
+    + [Template Rule](#template-rule)
       - [Url](#url)
       - [Body](#body)
       - [Header](#header)
-  - [Config](#config)
+  * [Config](#config)
+- [Troubleshooting and debug](#troubleshooting-and-debug)
+  * [Prometheus and metrics](#prometheus-and-metrics)
 
 # Get Started with Docker Image
 
@@ -30,9 +36,9 @@ This is done for contributors that don't want to wait 'till their changes appear
 
 Here is the list of supported environment variables:  
 * `JSON_FILE_URL` - is Http URL or filesystem path to JSON configuration file.  
-* `LOG_LEVEL` - is [NLog Log level](https://github.com/NLog/NLog/wiki/Configuration-file#log-levels) string. If nothing is set - Info will be a default. Use `Debug` level for configuraiton debugging.
-This allows you to download configuration from secured sources like [Amazon S3](https://aws.amazon.com/s3/), or put file into attached [docker volume](https://docs.docker.com/storage/volumes/).
-**Notice** that if your HTTP resource require authorization to download files, OpsBro can be authorized using query string only!
+This allows you to download configuration from secured sources like [Amazon S3](https://aws.amazon.com/s3/), or put file into attached [docker volume](https://docs.docker.com/storage/volumes/).  
+**Notice** that if your HTTP resource require authorization to download files, OpsBro can be authorized using query string only!  
+* `LOG_LEVEL` - is [NLog Log level](https://github.com/NLog/NLog/wiki/Configuration-file#log-levels) string. If nothing is set - Info will be a default. Use `Debug` level for configuraiton debugging.  
 
 ## Example
 
@@ -70,6 +76,7 @@ There is only one way to configure an applicaiton: via JSON configuration file.
 Basically, this file represent a JSON object that can be represented via the next example.
 ```json
 {
+    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/src/OpsBro.Api/settings-schema.json"
     "version":"",
     "listeners":[],
     "eventDispatchers":[],
@@ -79,9 +86,10 @@ Basically, this file represent a JSON object that can be represented via the nex
 Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
 `config` is a json object that could hold [configuration](#config) values for the template.
 `version` used to maintain compatibility between OpsBro version and configuraiton file version.
+`$schema` is optional path to the configuration file schema of actual OpsBro version. Used to simplify working with JSON editors.
 
 Example below will describe an integraiton between Gitlab webhooks and Jira transitions.  
-Original template could be found [HERE](../src/OpsBro.Api/g2j.json).
+Original template could be found [HERE](/templates/gitlab2jira.json).
 
 ## Recommended initial knowledge
 

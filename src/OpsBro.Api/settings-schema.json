@@ -11,6 +11,11 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "$id": "#root/schema",
+      "title": "Schema",
+      "type": "string"
+    },
     "version": {
       "$id": "#root/version",
       "title": "Version",

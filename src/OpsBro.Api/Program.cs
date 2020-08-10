@@ -59,7 +59,7 @@ namespace OpsBro.Api
 
             var logger = LogManager.GetCurrentClassLogger();
 
-            logger.Info("Welcome to OpsBro! -- this message means that logging is configured and working correctly");
+            logger.Info("Welcome to OpsBro! -- this message means that logging is configured and working properly");
             return logger;
         }
 

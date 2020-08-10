@@ -12,8 +12,8 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "JSON_FILE_URL": "g2j.json",
-        "LOG_LEVEL": "Info"
+        "JSON_FILE_URL": "config-example.json",
+        "LOG_LEVEL": "Debug"
       }
     }
   }

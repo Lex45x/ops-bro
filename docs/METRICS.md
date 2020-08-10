@@ -1,4 +1,4 @@
-#Prometheus Metrics
+# Prometheus Metrics
 
 This file contains description of the existing metrics that could be retrieved from the applicaiton.
 
@@ -32,7 +32,7 @@ Labels:
 * `event_name` contains name of event that has been extracted.
 
 ### events_without_dispatcher
-`events_without_dispatcher` contains amount of events has been extracted so far via specific listener but not event dispatcher has been found.  
+`events_without_dispatcher` contains amount of events has been extracted so far via specific listener but no event dispatcher has been found.  
 Expected: to be zero for the whole application lifetime. Values greater then zero is a misconfiguration signal.    
 Labels:  
 * `listener_name` contains name of listener that extracts event.
