@@ -11,12 +11,20 @@ using System.Threading.Tasks;
 
 namespace OpsBro.Api
 {
+
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static async Task Main(params string[] args)
         {
             Logger logger = InitializeLogging();
+            
+            await ConfigureApplication(logger);
 
+            BuildWebHost(new string[0]).Run();
+        }
+
+        private static async Task ConfigureApplication(Logger logger)
+        {
             try
             {
                 var settingsFactory = new SettingsFactory();
@@ -27,8 +35,6 @@ namespace OpsBro.Api
                 logger.Fatal(exception, "Settings deserialization is failed!");
                 throw;
             }
-
-            BuildWebHost(args).Run();
         }
 
         private static Logger InitializeLogging()
