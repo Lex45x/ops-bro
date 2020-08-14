@@ -46,7 +46,7 @@ This allows you to download the configuration from secured sources like [Amazon 
 The command below will start OpsBro 0.3 container with the valid configuration from the repository. 
 
 ```sh
-docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/src/OpsBro.Api/g2j.json" -p 8080:80 opsbro/ops-bro:0.3
+docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/templates/gitlab2jira.json" -p 8080:80 opsbro/ops-bro:0.3
 ```
 
 After a successful image start, you can navigate to `localhost:8080` and see [Swagger Documentation](https://swagger.io/).

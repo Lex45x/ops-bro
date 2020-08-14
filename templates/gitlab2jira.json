@@ -266,7 +266,7 @@
 		  "pattern": "[A-Z]{1,10}-\\d{1,10}",
 		  "target": "issue"
 	    }
-	  ]
+	  ],
       "extractors": [
         {
           "comment": "Commits are pushed into branch",
