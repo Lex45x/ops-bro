@@ -18,7 +18,9 @@ build_image_release:
   - TAG_VERSION=$(echo $CI_COMMIT_REF_NAME | cut -d'v' -f 2)
   script:
   - docker build -t $IMAGE_NAME:$TAG_VERSION ./src
+  - docker tag $IMAGE_NAME:$TAG_VERSION $IMAGE_NAME:latest
   - docker push $IMAGE_NAME:$TAG_VERSION
+  - docker push $IMAGE_NAME:latest
   
 # Used to build docker image per commit to develop  
 build_image_develop:

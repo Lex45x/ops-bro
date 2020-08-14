@@ -1,0 +1,413 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "root",
+  "title": "Configuraiton object",
+  "type": "object",
+  "required": [
+    "version",
+    "eventDispatchers",
+    "listeners",
+    "config"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "$id": "#root/schema",
+      "title": "Schema",
+      "type": "string"
+    },
+    "version": {
+      "$id": "#root/version",
+      "title": "Version",
+      "type": "string"
+    },
+    "eventDispatchers": {
+      "$id": "#root/eventDispatchers",
+      "title": "EventDispatchers",
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "$id": "#root/eventDispatchers/items",
+        "title": "Items",
+        "type": "object",
+        "required": [
+          "eventName",
+          "schema",
+          "subscribers"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "eventName": {
+            "$id": "#root/eventDispatchers/items/eventName",
+            "title": "EventName",
+            "type": "string"
+          },
+          "schema": {
+            "$id": "#root/eventDispatchers/items/schema",
+            "title": "Schema",
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-07/schema"
+          },
+          "subscribers": {
+            "$id": "#root/eventDispatchers/items/subscribers",
+            "title": "Subscribers",
+            "type": "array",
+            "default": [],
+            "additionalItems": false,
+            "items": {
+              "$id": "#root/eventDispatchers/items/subscribers/items",
+              "title": "Items",
+              "type": "object",
+              "required": [
+                "urlTemplate",
+                "method",
+                "bodyTemplate",
+                "bodyTemplateRules",
+                "headerTemplateRules",
+                "urlTemplateRules"
+              ],
+              "properties": {
+                "urlTemplate": {
+                  "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplate",
+                  "title": "UrlTemplate",
+                  "type": "string",
+                  "examples": [
+                    "https://{HOST}/rest/api/2/issue/{ISSUE}/transitions"
+                  ]
+                },
+                "method": {
+                  "$id": "#root/eventDispatchers/items/subscribers/items/method",
+                  "title": "Method",
+                  "type": "string",
+                  "enum": [ "GET", "POST", "PUT", "PATCH", "DELETE" ]
+                },
+                "bodyTemplate": {
+                  "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplate",
+                  "title": "BodyTemplate",
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "bodyTemplateRules": {
+                  "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules",
+                  "title": "Bodytemplaterules",
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items",
+                    "title": "Items",
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "property"
+                    ],
+                    "properties": {
+                      "path": {
+                        "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items/path",
+                        "title": "Path",
+                        "type": "string"
+                      },
+                      "property": {
+                        "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items/property",
+                        "title": "Property",
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "headerTemplateRules": {
+                  "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules",
+                  "title": "Headertemplaterules",
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules/items",
+                    "title": "Items",
+                    "type": "object",
+                    "required": [
+                      "headerName",
+                      "property"
+                    ],
+                    "properties": {
+                      "headerName": {
+                        "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules/items/headerName",
+                        "title": "HeaderName",
+                        "type": "string"
+                      },
+                      "property": {
+                        "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules/items/property",
+                        "title": "Property",
+                        "type": "string"
+                      }
+                    }
+                  }
+
+                },
+                "urlTemplateRules": {
+                  "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules",
+                  "title": "UrlTemplateRules",
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules/items",
+                    "title": "Items",
+                    "type": "object",
+                    "required": [
+                      "substring",
+                      "property"
+                    ],
+                    "properties": {
+                      "substring": {
+                        "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules/items/substring",
+                        "title": "Substring",
+                        "type": "string"
+                      },
+                      "property": {
+                        "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules/items/property",
+                        "title": "Property",
+                        "type": "string"
+                      }
+                    }
+                  }
+
+                }
+              }
+            }
+
+          }
+        }
+      }
+
+    },
+    "listeners": {
+      "$id": "#root/listeners",
+      "title": "Listeners",
+      "type": "array",
+      "default": [],
+      "items": {
+        "$id": "#root/listeners/items",
+        "title": "Items",
+        "type": "object",
+        "required": [
+          "name",
+          "unnestingRules",
+          "extractors"
+        ],
+        "properties": {
+          "name": {
+            "$id": "#root/listeners/items/name",
+            "title": "Name",
+            "type": "string"
+          },
+          "unnestingRules": {
+            "$id": "#root/listeners/items/unnestingRules",
+            "title": "UnnestingRules",
+            "type": "array",
+            "items": {
+              "$id": "#root/listeners/items/unnestingRules/perRegexMatch",
+              "title": "Items",
+              "type": "object",
+              "required": [
+                "type",
+                "path",
+                "pattern",
+                "target"
+              ],
+              "properties": {
+                "type": {
+                  "$id": "#root/listeners/items/unnestingRules/perRegexMatch/items/type",
+                  "title": "Type",
+                  "type": "string",
+                  "enum": [ "PerRegexMatch" ]
+                },
+                "path": {
+                  "$id": "#root/listeners/items/unnestingRules/perRegexMatch/items/path",
+                  "title": "Path",
+                  "type": "string"
+                },
+                "pattern": {
+                  "$id": "#root/listeners/items/unnestingRules/perRegexMatch/items/pattern",
+                  "title": "Pattern",
+                  "type": "string"
+                },
+                "target": {
+                  "$id": "#root/listeners/items/unnestingRules/perRegexMatch/items/target",
+                  "title": "Target",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "extractors": {
+            "$id": "#root/listeners/items/extractors",
+            "title": "Extractors",
+            "type": "array",
+            "items": {
+              "$id": "#root/listeners/items/extractors/items",
+              "title": "Items",
+              "type": "object",
+              "required": [
+                "comment",
+                "eventName",
+                "extractionRules",
+                "validationRules"
+              ],
+              "properties": {
+                "comment": {
+                  "$id": "#root/listeners/items/extractors/items/comment",
+                  "title": "Comment",
+                  "type": "string"
+                },
+                "eventName": {
+                  "$id": "#root/listeners/items/extractors/items/eventName",
+                  "title": "Eventname",
+                  "type": "string"
+                },
+                "extractionRules": {
+                  "$id": "#root/listeners/items/extractors/items/extractionRules",
+                  "title": "ExtractionRules",
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$id": "#root/listeners/items/extractors/items/extractionRules/copyRule",
+                        "title": "Items",
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "path",
+                          "property"
+                        ],
+                        "properties": {
+                          "type": {
+                            "$id": "#root/listeners/items/extractors/items/extractionRules/items/copyRule/type",
+                            "title": "Type",
+                            "type": "string",
+                            "enum": [ "Copy" ]
+                          },
+                          "path": {
+                            "$id": "#root/listeners/items/extractors/items/extractionRules/items/copyRule/path",
+                            "title": "Path",
+                            "type": "string"
+                          },
+                          "property": {
+                            "$id": "#root/listeners/items/extractors/items/extractionRules/items/copyRule/property",
+                            "title": "Property",
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "$id": "#root/listeners/items/extractors/items/extractionRules/firstRegexMatchRule",
+                        "title": "Items",
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "pattern",
+                          "path",
+                          "property"
+                        ],
+                        "properties": {
+                          "type": {
+                            "$id": "#root/listeners/items/extractors/items/extractionRules/items/firstRegexMatchRule/type",
+                            "title": "Type",
+                            "type": "string",
+                            "enum": [ "FirstRegexMatch" ]
+                          },
+                          "pattern": {
+                            "$id": "#root/listeners/items/extractors/items/extractionRules/items/firstRegexMatchRule/pattern",
+                            "title": "Pattern",
+                            "type": "string"
+                          },
+                          "path": {
+                            "$id": "#root/listeners/items/extractors/items/extractionRules/items/firstRegexMatchRule/path",
+                            "title": "Path",
+                            "type": "string"
+                          },
+                          "property": {
+                            "$id": "#root/listeners/items/extractors/items/extractionRules/items/firstRegexMatchRule/property",
+                            "title": "Property",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "validationRules": {
+                  "$id": "#root/listeners/items/extractors/items/validationRules",
+                  "title": "ValidationRules",
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$id": "#root/listeners/items/extractors/items/validationRules/fromPathRule",
+                        "title": "Items",
+                        "type": "object",
+                        "required": [
+                          "path",
+                          "operator",
+                          "value"
+                        ],
+                        "properties": {
+                          "path": {
+                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromPathRule/path",
+                            "title": "Path",
+                            "type": "string"
+                          },
+                          "operator": {
+                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromPathRule/operator",
+                            "title": "Operator",
+                            "type": "string"
+                          },
+                          "value": {
+                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromPathRule/value",
+                            "title": "Value"
+                          }
+                        }
+                      },
+                      {
+                        "$id": "#root/listeners/items/extractors/items/validationRules/fromConfigRule",
+                        "title": "Items",
+                        "type": "object",
+                        "required": [
+                          "path",
+                          "configPath",
+                          "operator"
+                        ],
+                        "properties": {
+                          "path": {
+                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromConfigRule/path",
+                            "title": "Path",
+                            "type": "string"
+                          },
+                          "configPath": {
+                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromConfigRule/configPath",
+                            "title": "Configpath",
+                            "type": "string"
+                          },
+                          "operator": {
+                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromConfigRule/operator",
+                            "title": "Operator",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  }
+
+                }
+              }
+            }
+
+          }
+        }
+      }
+    },
+    "config": {
+      "$id": "#root/config",
+      "title": "Config",
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

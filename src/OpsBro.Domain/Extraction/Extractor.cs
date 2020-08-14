@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using FluentValidation;
 using Newtonsoft.Json.Linq;
+using NLog;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction.Rules;
 using OpsBro.Domain.Extraction.Validation;
@@ -15,10 +17,11 @@ namespace OpsBro.Domain.Extraction
     /// </summary>
     public class Extractor
     {
-        public Extractor(string name, string eventName, ICollection<ExtractionRule> extractionRules,
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+        public Extractor(string comment, string eventName, ICollection<ExtractionRule> extractionRules,
             ICollection<ValidationRule> validationRules)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Comment = comment ?? throw new ArgumentNullException(nameof(comment));
             EventName = eventName ?? throw new ArgumentNullException(nameof(eventName));
             ExtractionRules = extractionRules ?? throw new ArgumentNullException(nameof(extractionRules));
             ValidationRules = validationRules ?? throw new ArgumentNullException(nameof(validationRules));
@@ -42,9 +45,9 @@ namespace OpsBro.Domain.Extraction
         }
 
         /// <summary>
-        /// The name of a Extractor
+        /// Description of the specific extractor
         /// </summary>
-        public string Name { get; }
+        public string Comment { get; }
 
         /// <summary>
         /// Name of Event that will be extracted as a result
@@ -80,6 +83,10 @@ namespace OpsBro.Domain.Extraction
 
             if (!validationResult.IsValid)
             {
+                logger.Debug("Event extraction interrupted with validation failure. {failure}", validationResult.Errors.Aggregate(
+                    new StringBuilder(),
+                    (builder, failure) => builder.AppendLine(failure.ErrorMessage)));
+
                 extractedEvent = null;
                 return false;
             }
@@ -88,6 +95,8 @@ namespace OpsBro.Domain.Extraction
                 (current, extractionRule) => extractionRule.ApplyRule(current, payload));
 
             extractedEvent = new Event(EventName, eventData);
+
+            logger.Debug("Event extracted! {event}", extractedEvent);
 
             return true;
         }

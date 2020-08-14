@@ -1,9 +1,10 @@
 {
+  "version": "v0.3",
   "eventDispatchers": [
     {
       "eventName": "take_in_progress",
       "schema": {
-        "$id": "http: //example.com/example.json",
+        "$id": "g2j/take_in_progress",
         "type": "object",
         "properties": {
           "issue": {
@@ -11,24 +12,24 @@
             "type": "string",
             "title": "TheIssueSchema",
             "default": "",
-            "examples": ["SH-123"]
+            "examples": [ "SH-123" ]
           },
           "author": {
             "$id": "/properties/author",
             "type": "string",
             "title": "TheAuthorSchema",
             "default": "",
-            "examples": ["alex.redka"]
+            "examples": [ "alex.redka" ]
           },
           "ref": {
             "$id": "/properties/ref",
             "type": "string",
             "title": "TheRefSchema",
             "default": "",
-            "examples": ["refs/heads/develo"]
+            "examples": [ "refs/heads/develo" ]
           }
         },
-        "required": ["issue", "author", "ref"]
+        "required": [ "issue", "author", "ref" ]
       },
       "subscribers": [
         {
@@ -94,17 +95,17 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           },
           "url": {
             "$id": "/properties/url",
             "type": "string",
             "title": "The Url Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           }
         },
-        "required": ["issue", "url"]
+        "required": [ "issue", "url" ]
       },
       "subscribers": [
         {
@@ -151,7 +152,7 @@
     {
       "eventName": "task_work_in_progress",
       "schema": {
-        "$id": "http://example.com/example.json",
+        "$id": "g2j/task_work_in_progress",
         "type": "object",
         "properties": {
           "issue": {
@@ -159,10 +160,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           }
         },
-        "required": ["issue"]
+        "required": [ "issue" ]
       },
       "subscribers": [
         {
@@ -201,7 +202,7 @@
     {
       "eventName": "merge_task",
       "schema": {
-        "$id": "http://example.com/example.json",
+        "$id": "g2j/merge_task",
         "type": "object",
         "properties": {
           "issue": {
@@ -209,10 +210,10 @@
             "type": "string",
             "title": "The Issue Schema ",
             "default": "",
-            "examples": [""]
+            "examples": [ "" ]
           }
         },
-        "required": ["issue"]
+        "required": [ "issue" ]
       },
       "subscribers": [
         {
@@ -252,15 +253,28 @@
   "listeners": [
     {
       "name": "gitlab",
+	  "unnestingRules":[
+	    {
+	      "type": "PerRegexMatch",
+		  "path": "body.object_attributes.source_branch",
+		  "pattern": "[A-Z]{1,10}-\\d{1,10}",
+		  "target": "issue"
+	    },
+		{
+	      "type": "PerRegexMatch",
+		  "path": "body.ref",
+		  "pattern": "[A-Z]{1,10}-\\d{1,10}",
+		  "target": "issue"
+	    }
+	  ]
       "extractors": [
         {
-          "name": "push",
+          "comment": "Commits are pushed into branch",
           "eventName": "take_in_progress",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.ref",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -278,10 +292,7 @@
             {
               "path": "headers.X-Gitlab-Token[0]",
               "configPath": "gitlab.token",
-              "operator": "Equals",
-              "config": {
-                "$ref": "config"
-              } 
+              "operator": "Equals"
             },
             {
               "path": "body.object_kind",
@@ -296,13 +307,12 @@
           ]
         },
         {
-          "name": "merge_request_created",
+          "comment": "Merge request created",
           "eventName": "complete_task",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -335,13 +345,12 @@
           ]
         },
         {
-          "name": "merge_request_completed",
+          "comment": "Merge request WIP status resolved",
           "eventName": "complete_task",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -374,13 +383,12 @@
           ]
         },
         {
-          "name": "merge_request_take_in_progress",
+          "comment": "WIP status assigned to a Merge Request",
           "eventName": "task_work_in_progress",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -413,13 +421,12 @@
           ]
         },
         {
-          "name": "merge_request_merged",
+          "comment": "Merge request merged",
           "eventName": "merge_task",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             }
           ],
