@@ -2,60 +2,67 @@
 
 - [Documentation Index](#documentation-index)
 - [Get Started with Docker Image](#get-started-with-docker-image)
+  * [Environment variables](#environment-variables)
+  * [Example](#example)
 - [Concept](#concept)
 - [Understanding the Configuration](#understanding-the-configuration)
-  - [Types](#types)
-    - [Request](#request)
-    - [Event Context](#event-context)
-  - [Listener](#listener)
-  - [Extractor](#extractor)
-    - [Validation Rule](#validation-rule)
-    - [Extraction Rule](#extraction-rule)
-  - [Event Dispatcher](#event-dispatcher)
-  - [Event Subscriber](#event-subscriber)
-    - [Template Rule](#template-rule)
+  * [Recommended initial knowledge](#recommended-initial-knowledge)
+  * [Types](#types)
+    + [Request](#request)
+    + [Event Context](#event-context)
+  * [Versioning](#versioning)
+  * [Listener](#listener)
+    + [Unnesting rule](#unnesting-rule)
+  * [Extractor](#extractor)
+    + [Validation Rule](#validation-rule)
+    + [Extraction Rule](#extraction-rule)
+  * [Event Dispatcher](#event-dispatcher)
+  * [Event Subscriber](#event-subscriber)
+    + [Template Rule](#template-rule)
       - [Url](#url)
       - [Body](#body)
       - [Header](#header)
-  - [Config](#config)
+  * [Config](#config)
+- [Troubleshooting and debug](#troubleshooting-and-debug)
+  * [Prometheus and metrics](#prometheus-and-metrics)
 
 # Get Started with Docker Image
 
 You can find docker images in the [Docker Hub](https://hub.docker.com/repository/docker/opsbro/ops-bro).  
-Docker image tags are the same as tags in the repository.
-Each commit to `develop` branch has own docker image with tag `develop-$commit-short-sha`.  
-This is done for contributors that don't want to wait 'till their changes appear in main release.
+Docker image tags are the same as tags in the repository.  
+Each commit to `develop` branch has its docker image with tag `develop-$commit-short-sha`.  
+This is done for contributors who don't want to wait until their changes appear in the main release.
 
 ## Environment variables
 
 Here is the list of supported environment variables:  
 * `JSON_FILE_URL` - is Http URL or filesystem path to JSON configuration file.  
-* `LOG_LEVEL` - is [NLog Log level](https://github.com/NLog/NLog/wiki/Configuration-file#log-levels) string. If nothing is set - Info will be a default. Use `Debug` level for configuraiton debugging.
-This allows you to download configuration from secured sources like [Amazon S3](https://aws.amazon.com/s3/), or put file into attached [docker volume](https://docs.docker.com/storage/volumes/).
-**Notice** that if your HTTP resource require authorization to download files, OpsBro can be authorized using query string only!
+This allows you to download the configuration from secured sources like [Amazon S3](https://aws.amazon.com/s3/) or put the file into the attached [docker volume](https://docs.docker.com/storage/volumes/).  
+**Notice** that if your HTTP resource requires authorization to download files, OpsBro can only be authorized using query string only!  
+* `LOG_LEVEL` - is [NLog Log level](https://github.com/NLog/NLog/wiki/Configuration-file#log-levels) string. If nothing is set - Info will be a default. Use the `Debug` level for configuration debugging.  
 
 ## Example
 
-The command below will start OpsBro 0.2 container with valid configuration from repository. 
+The command below will start OpsBro 0.3 container with the valid configuration from the repository. 
 
 ```sh
-docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.2/src/OpsBro.Api/g2j.json" -p 8080:80 opsbro/ops-bro:0.2
+docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/src/OpsBro.Api/g2j.json" -p 8080:80 opsbro/ops-bro:0.3
 ```
 
-After successfull image start you can navigate to `localhost:8080` and see [Swagger Documentation](https://swagger.io/).
+After a successful image start, you can navigate to `localhost:8080` and see [Swagger Documentation](https://swagger.io/).
 
 ![Swagger Documentation](swagger&#32;documentation.png)
 
 As you can see, there is only one endpoint for all listeners.
-`listenerName` is corrseponding to name of the [Listener](#listener).
+`listenerName` is corresponding to the name of the [Listener](#listener).
 
 You may `Try it Out` and get 200OK for any request body.
 
 # Concept
 
-ops-bro allows to connect services that have WebHooks to service that have REST API.
+Ops-bro allows connecting services that have WebHooks to service that have REST API.
 
-1. Service make a call to a specific ops-bro [Listener](#listener).
+1. Service makes a call to a specific ops-bro [Listener](#listener).
 2. [Listener](#listener) extract events from the request using a list of [Extractors](#extractor).
 3. Event then processed via [Event Dispathcer](#event-dispatcher) and distributed to all [Event Subscribers](#event-subscriber). 
 4. Each [Event Subscriber](#event-subscriber) converts event to HTTP request message and sends it to related service.
@@ -66,10 +73,11 @@ See generic flow on the image below.
 
 # Understanding the Configuration
 
-There is only one way to configure an applicaiton: via JSON configuration file.
-Basically, this file represent a JSON object that can be represented via the next example.
+There is only one way to configure an application: via the JSON configuration file.
+This file represents a JSON object that looks like an example below.
 ```json
 {
+    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/src/OpsBro.Api/settings-schema.json"
     "version":"",
     "listeners":[],
     "eventDispatchers":[],
@@ -77,30 +85,32 @@ Basically, this file represent a JSON object that can be represented via the nex
 }
 ```
 Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
-`config` is a json object that could hold [configuration](#config) values for the template.
-`version` used to maintain compatibility between OpsBro version and configuraiton file version.
+`config` is a JSON object that may hold [configuration](#config) values for the template.
+`version` used to maintain compatibility between the OpsBro version and configuration file version.
+`$schema` is the optional path to the configuration file schema of the stable OpsBro version. Used to simplify working with JSON editors.
 
-Example below will describe an integraiton between Gitlab webhooks and Jira transitions.  
-Original template could be found [HERE](../src/OpsBro.Api/g2j.json).
+The example below will describe an integration between Gitlab webhooks and Jira transitions.  
+The original template can be found [HERE](/templates/gitlab2jira.json).
 
 ## Recommended initial knowledge
 
-All of the links below will provide basic knowledge to understand what's going on.
+All of the links below will provide essential knowledge to understand what's going on.
 
-* Understanding general idea of [Webhook API](https://en.wikipedia.org/wiki/Webhook).
+* Understanding the general idea of [Webhook API](https://en.wikipedia.org/wiki/Webhook).
 * Understanding [REST API](https://en.wikipedia.org/wiki/REST) and [HTTP protocol](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) in general.
-* [JSON](https://en.wikipedia.org/wiki/JSON) is a heart of this application. All data is represented in JSON format.
-* [JSON Path](https://restfulapi.net/json-jsonpath/) act as a main tool of webhooks and events processing.
+* [JSON](https://en.wikipedia.org/wiki/JSON) is the heart of this application. All data is represented in JSON format.
+* [JSON Path](https://restfulapi.net/json-jsonpath/) acts as the primary tool of webhooks and events processing.
 
 ## Types
-Configuration is implicitly use the internal application types.  
-Each type represents a data, that might be somehow addressed or used inside the configuration file.
+The configuration is implicitly using the internal application types.  
+Each type represents data that might be somehow addressed or used inside the configuration file.
 
 ### Request
 Inside the request object there are three properties:
 * `query` - contains all query parameters
 * `body` - contains json representation of the request body
 * `headers` - contains request headers
+* `unnest` - contains the resluts of [Unnesting Rule](#unnesting-rule)
 
 ```json
 {
@@ -110,7 +120,8 @@ Inside the request object there are three properties:
     "body":{},
     "headers":{
         "key":"value"
-    }
+    },
+	"unnest":{}
 }
 ```
 
@@ -128,35 +139,71 @@ Inside the event context there is two properties:
 
 ## Versioning
 
-`version` field in the root of configuraiton file is responsible for expression of the compatible OpsBro version.  
+`version` field in the root of the configuration file is responsible for the expression of the compatible OpsBro version.  
 Version field value corresponds to OpsBro releases.  
-If the version from configuration file is missmatch OpBro version - applicaiton will fail with Config serialization exception.  
-If you need to have OpsBro working with different versions of the configuration file - you have to use multiple instances of OpsBro - one per version.
+If the version from a configuration file is mismatch OpBro version - the application will fail with Config deserialization exception.  
+If you need to have OpsBro working with different versions of the configuration file - you have to use multiple instances of OpsBro - one instance per configuration version.
 
 ## Listener
 
 Each listener represents a source of incoming HTTP requests.  
-E.g.: You want to build one-way integration between Gitlab and Jira. So, in this case you **listen** to Gitlab events and change state of the Jira issues accordingly. As a result you will create a single Listener, called gitlab.  
-See an example below.
+E.g., You want to build one-way integration between Gitlab and Jira. So, in this case, you **listen** to Gitlab events and change the state of the Jira issues accordingly. As a result, you will create a single Listener called gitlab.  
+See the example below.
 ```json
 {
     "listeners":[
         {
             "name":"gitlab",
+			"unnestingRules":[],
             "extractors":[]            
         }
     ],
     "eventDispatchers":[]
 }
 ```
-`extractors` is a list of [Extractor](#extractor) that is describe below.
+`extractors` is a list of [Extractor](#extractor) that is described below.
+
+### Unnesting rule
+
+This feature name was inspired by PL/pgSQL array funciton [unnest](https://www.postgresql.org/docs/9.1/functions-array.html).  
+Unnesting rules allows to process a single listener call as a sequence of listener calls.
+Unnest operation will be applied to [Request](#request) object.
+
+```json
+{
+    "listeners":[
+        {
+            "name":"gitlab",
+			"unnestingRules": [
+			  {
+				"type": "PerRegexMatch",
+				"path": "body.object_attributes.source_branch",
+				"pattern": "[A-Z]{1,10}-\\d{1,10}",
+				"target": "issue"
+			  }
+			],
+            "extractors":[]            
+        }
+    ],
+    "eventDispatchers":[]
+}
+```
+
+`"type": "PerRegexMatch"` - right now only one unnest type is allowed. It will unnest array of all macthes of regex in property specified via Path.  
+`path` - [JSON Path](https://restfulapi.net/json-jsonpath/) used to find json-token for matching.  
+`pattern` - Regex itself.  
+`target` - name of the property for each unnesting entry. All properties will be created in `unnest` property of [Request](#request) object.  
+
+In the given example, call to Gitlab listener with `source_branch` may containing multiple JIRA Issue keys will be unnested to multiple calls with unnest.issue set to regex match.   
+Notice, that unnesting rules can be stacked. In the result you will have [Cartesian product](https://en.wikipedia.org/wiki/Cartesian_product) of all regex matches.
+Also, if property defined in unnesting rule is not found - in the result will be a single unchanged payload.
 
 ## Extractor
 
-Each extractor represent a set of rules used to extract a single type of event from the request to a parent [Listener](#listener).  
-E.g.: Gitlab listener acts as a source of different events: commit pushed, merge request created, merge request taken back in progress, merge request completed, merge request merged, etc. 
-So, in this case, each of the listed event types will have dedicated extractor.
-See an example below.
+Each extractor represents a set of rules used to extract a single type of event from the request to a parent [Listener](#listener).  
+E.g., Gitlab listener acts as a source of different events: commit pushed, merge request created, merge request taken back in progress, merge request completed, merge request merged, and others. 
+So, in this case, each of the listed event types will have a dedicated extractor.
+See the example below.
 ```json
 {
     "listeners":[
@@ -201,12 +248,12 @@ See an example below.
 ```
 
 `comment` is used to describe a specific action that happened on the Webhook creator side
-`eventName` is a name of event that will be extracted from request to Listener.  
+`eventName` is a name of an event that will be extracted from request to Listener.  
 `extractionRules` is a set of [Extraction Rule](#extraction-rule) that will be described below.  
-`validationRules` is a set of [Validation Rule](#validation-rule) that helps to ensure that current request body relates exactly to this extractor.  
+`validationRules` is a set of [Validation Rule](#validation-rule) that ensures that the current request body relates exactly to this extractor.  
 
 ### Validation Rule
-Validation rule allows to validate [Request](#request) using [JSON Path](https://restfulapi.net/json-jsonpath/). Json-token that was retrieved via path will be compared to expected value with selected operator. See example below:
+Validation rule allows to validate [Request](#request) using [JSON Path](https://restfulapi.net/json-jsonpath/). Json-token that was retrieved via path will be compared to the expected value with the selected operator. See example below:
 ```json
 {
     "validationRules":[
@@ -231,15 +278,15 @@ An example will take first (`0`) `X-Gitlab-Token` header from request and check 
 Also, a comparison value could be provided from the [configuration](#config) object using `configPath` property.  
 This property used to specify path inside [configuration](#config) object.  
 
-Currently, there is two operators with self-explanatory names. 
+Currently, there are two operators with self-explanatory names. 
 * Equals
 * NotEquals
 
-Operators could be applied only to one json-token at a time - no validation across arrays.
+Operators could be applied only to one JSON-token at a time - no validation across arrays.
 
 ### Extraction Rule
 
-Extraction rules allows to specify a way to compose event from [Request](#request).
+Extraction rules allow specifying a way to compose the event from [Request](#request).
 [JSON Path](https://restfulapi.net/json-jsonpath/) used to find json-token for extraction as well. See example below:
 ```json
 {
@@ -265,13 +312,13 @@ Extraction rules allows to specify a way to compose event from [Request](#reques
 ```
 
 `path` is json path in the [request](#request).  
-`property` is name of event property to set. If event already has value in the property then it will be replaced.  
+`property` is the name of the event property to set. If the event already has value in the property then it will be replaced.  
 `type` determines the way to extract specific property:
-* `Copy` copies found json-token as is
-* `FirstRegexMatch` takes a first substring that match specified `pattern`  
+* `Copy` copies found JSON-token as is
+* `FirstRegexMatch` takes a first substring that matches specified `pattern`  
 
 ## Event Dispatcher
-Event dispatcher is responsible for dispatch an event with specific name to it's subscribers. See dispatcher configuraiton below:
+The Event dispatcher is responsible for dispatch an event with a specific name to its subscribers. See dispatcher configuration below:
 ```json
 {
     "eventDispatchers": [
@@ -286,11 +333,11 @@ Event dispatcher is responsible for dispatch an event with specific name to it's
 
 `eventName` - the same name as used in [Extractor](#extractor).  
 `schema` - [JSON Schema](https://json-schema.org/) used to guarantee structure of the event.  
-`subscribers` - list of subscribers for event represented by this dispatcher
+`subscribers` - list of subscribers for the event represented by this dispatcher
 
 ## Event Subscriber
-Event subscriber converts an event to an HTTP call.  
-Each subscriber holds templates and rules for this templates.  
+The event subscriber converts an event to an HTTP call.  
+Each subscriber holds templates and rules for these templates.  
 See an example of event subscriber
 ```json
 {
@@ -308,11 +355,11 @@ See an example of event subscriber
 ```
 
 ### Template Rule
-Template rule describes how to fill event/config json-token into predefined template.
-Basically, template rules depends on the template type and so there are difference between them. See types defined below.
+The template rule describes how to fill event/config JSON-token into a predefined template.
+Template rules depend on the template type, and so there is a difference between them. See the types defined below.
 
 #### Url
-Template rule for the URL replaces substring in the template with value found by Property.
+The template rule for the URL replaces substring in the template with the value found by Property.
 
 ```json
 {
@@ -324,7 +371,7 @@ Template rule for the URL replaces substring in the template with value found by
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
 
 #### Body
-Template rule for body replaces json token in the template with token found by property path.
+The template rule for body replaces JSON token in the template with token found by the property path.
 
 ```json
 {
@@ -336,7 +383,7 @@ Template rule for body replaces json token in the template with token found by p
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
 
 #### Header
-Template rule for header adds a header with defined name to the http headers collection.
+The template rule for the header adds a header with a defined name to the HTTP headers collection.
 
 ```json
 {
@@ -350,7 +397,7 @@ Template rule for header adds a header with defined name to the http headers col
 
 ## Config
 
-Config object created to improove reusability of the templates.
+Config object created to improve the reusability of the templates.
 It can hold any value and may be imported into [validation rules](#validation-rule) as well as become a part of [Event Context](#event-context).
 
 ```json
@@ -365,10 +412,10 @@ It can hold any value and may be imported into [validation rules](#validation-ru
 
 # Troubleshooting and debug
 
-OpsBro has several mechanisms that will help you to understand that somehting is going wrong.
+OpsBro has several mechanisms that will help you to understand that something is going wrong.
 
 ## Prometheus and metrics
 
 OpsBro has built-in support for Prometheus metrics.  
-They are available on default `/metrics` route.  
+They are available on the default `/metrics` route.  
 More details about metrics could be found in dedicated [metrics specification](/docs/METRICS.md)

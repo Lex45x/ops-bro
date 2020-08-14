@@ -27,6 +27,7 @@ namespace OpsBro.Domain.Extraction.Validation
                     validator.RuleFor(o => o.SelectToken(Path))
                         .Must(token =>
                         {
+                            token ??= JValue.CreateNull();
                             var comparisonValue = JToken.FromObject(Value ?? JValue.CreateNull());
                             var tokensAreEqual = JToken.DeepEquals(token, comparisonValue);
 
@@ -38,6 +39,7 @@ namespace OpsBro.Domain.Extraction.Validation
                     validator.RuleFor(o => o.SelectToken(Path))
                         .Must(token =>
                         {
+                            token ??= JValue.CreateNull();
                             var comparisonValue = JToken.FromObject(Value ?? JValue.CreateNull());
                             var tokensAreEqual = JToken.DeepEquals(token, comparisonValue);
 

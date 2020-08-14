@@ -253,15 +253,28 @@
   "listeners": [
     {
       "name": "gitlab",
+	  "unnestingRules":[
+	    {
+	      "type": "PerRegexMatch",
+		  "path": "body.object_attributes.source_branch",
+		  "pattern": "[A-Z]{1,10}-\\d{1,10}",
+		  "target": "issue"
+	    },
+		{
+	      "type": "PerRegexMatch",
+		  "path": "body.ref",
+		  "pattern": "[A-Z]{1,10}-\\d{1,10}",
+		  "target": "issue"
+	    }
+	  ]
       "extractors": [
         {
           "comment": "Commits are pushed into branch",
           "eventName": "take_in_progress",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.ref",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -298,9 +311,8 @@
           "eventName": "complete_task",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -337,9 +349,8 @@
           "eventName": "complete_task",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -376,9 +387,8 @@
           "eventName": "task_work_in_progress",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             },
             {
@@ -415,9 +425,8 @@
           "eventName": "merge_task",
           "extractionRules": [
             {
-              "type": "FirstRegexMatch",
-              "pattern": "[A-Z]{1,10}-\\d{1,10}",
-              "path": "body.object_attributes.source_branch",
+              "type": "Copy",
+              "path": "unnest.issue",
               "property": "issue"
             }
           ],

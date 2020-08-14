@@ -83,7 +83,7 @@ namespace OpsBro.Domain.Extraction
 
             if (!validationResult.IsValid)
             {
-                logger.Debug("Event extraction interrupted with validation failure.", validationResult.Errors.Aggregate(
+                logger.Debug("Event extraction interrupted with validation failure. {failure}", validationResult.Errors.Aggregate(
                     new StringBuilder(),
                     (builder, failure) => builder.AppendLine(failure.ErrorMessage)));
 
