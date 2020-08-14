@@ -3,7 +3,7 @@
 ## What is ops-bro?
 
 The modern business environment usually consists of many different services that have to somehow interact with each other.  
-Usually, most of the services have a predefined set of integrations, like Jira and Github. But what if your needs are outside of predefined functions?  
+Usually, most of the services have a predefined set of integrations, like Jira and Gitlab. But what if your needs are outside of predefined functions?  
 Here is the place where OpsBro comes to the play.  
 With OpsBro, you can define your own custom set of integrations without a single line of code!  
 1. Take service A and subscribe to its webhooks.  
