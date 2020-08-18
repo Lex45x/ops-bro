@@ -31,7 +31,7 @@ namespace OpsBro.Domain.Settings
         public IDictionary<string, EventDispatcher> EventDispatcherByEventName { get; }
         public JObject Config { get; }
 
-        public static readonly string Version = "v0.3";
+        public static readonly string Version = "v0.3.1";
     }
 
 }

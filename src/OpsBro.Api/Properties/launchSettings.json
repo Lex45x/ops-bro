@@ -12,7 +12,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "JSON_FILE_URL": "config-example.json",
+        "CONFIGURATION_FILE_URL": "config-example.yaml",
         "LOG_LEVEL": "Debug"
       }
     }

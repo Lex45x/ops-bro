@@ -36,7 +36,8 @@ This is done for contributors who don't want to wait until their changes appear 
 ## Environment variables
 
 Here is the list of supported environment variables:  
-* `JSON_FILE_URL` - is Http URL or filesystem path to JSON configuration file.  
+* `CONFIGURATION_FILE_URL` - is Http URL or filesystem path to JSON configuration file.  
+* `JSON_FILE_URL` - **deprecated**, use `CONFIGURATION_FILE_URL` instead.  
 This allows you to download the configuration from secured sources like [Amazon S3](https://aws.amazon.com/s3/) or put the file into the attached [docker volume](https://docs.docker.com/storage/volumes/).  
 **Notice** that if your HTTP resource requires authorization to download files, OpsBro can only be authorized using query string only!  
 * `LOG_LEVEL` - is [NLog Log level](https://github.com/NLog/NLog/wiki/Configuration-file#log-levels) string. If nothing is set - Info will be a default. Use the `Debug` level for configuration debugging.  
@@ -46,7 +47,7 @@ This allows you to download the configuration from secured sources like [Amazon 
 The command below will start OpsBro 0.3 container with the valid configuration from the repository. 
 
 ```sh
-docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/templates/gitlab2jira.json" -p 8080:80 opsbro/ops-bro:0.3
+docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/templates/gitlab2jira.yaml" -p 8080:80 opsbro/ops-bro:0.3.1
 ```
 
 After a successful image start, you can navigate to `localhost:8080` and see [Swagger Documentation](https://swagger.io/).
@@ -77,7 +78,7 @@ There is only one way to configure an application: via the JSON configuration fi
 This file represents a JSON object that looks like an example below.
 ```json
 {
-    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/src/OpsBro.Api/settings-schema.json"
+    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json"
     "version":"",
     "listeners":[],
     "eventDispatchers":[],
@@ -90,7 +91,7 @@ Where the `listeners` is a collection of [Listeners](#listener) and `eventDispat
 `$schema` is the optional path to the configuration file schema of the stable OpsBro version. Used to simplify working with JSON editors.
 
 The example below will describe an integration between Gitlab webhooks and Jira transitions.  
-The original template can be found [HERE](/templates/gitlab2jira.json).
+The original template can be found [HERE](/templates/gitlab2jira.yaml).
 
 ## Recommended initial knowledge
 

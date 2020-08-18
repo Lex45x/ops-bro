@@ -5,6 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="config-example.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="config-example.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NLog" Version="4.7.3" />
@@ -19,9 +29,6 @@
 
   <ItemGroup>
     <Content Update="g2j.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="settings-schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

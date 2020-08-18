@@ -6,12 +6,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="settings-schema.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="settings-schema.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="abioc" Version="0.8.0" />
     <PackageReference Include="FluentValidation" Version="9.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.13" />
     <PackageReference Include="NLog" Version="4.7.3" />
     <PackageReference Include="prometheus-net" Version="3.6.0" />
+    <PackageReference Include="YamlDotNet" Version="8.1.2" />
   </ItemGroup>
 
 </Project>
