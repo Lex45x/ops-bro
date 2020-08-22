@@ -44,12 +44,14 @@ eventDispatchers:
           name: "{AUTHOR}"
         customfield_10035: "{REF}"
       transition:
-        id: '21'
+        id: '0'
     bodyTemplateRules:
     - path: fields.assignee.name
       property: event.author
     - path: fields.customfield_10035
       property: event.ref
+    - path: transition
+      property: config.jira.transitions.take_in_progress
     headerTemplateRules:
     - headerName: Authorization
       property: config.jira.auth
@@ -87,14 +89,16 @@ eventDispatchers:
       update:
         comment:
         - add:
-            body: Pull request created
+            body: Pull request is ready for review!
       fields:
         customfield_10031: "{URL}"
       transition:
-        id: '31'
+        id: '0'
     bodyTemplateRules:
     - path: fields.customfield_10031
       property: event.url
+    - path: transition
+      property: config.jira.transitions.merge_request_ready
     headerTemplateRules:
     - headerName: Authorization
       property: config.jira.auth
@@ -124,8 +128,10 @@ eventDispatchers:
         - add:
             body: Pull request become WIP!
       transition:
-        id: '111'
-    bodyTemplateRules: []
+        id: '0'
+    bodyTemplateRules:
+    - path: transition
+      property: config.jira.transitions.merge_request_become_wip
     headerTemplateRules:
     - headerName: Authorization
       property: config.jira.auth
@@ -155,8 +161,10 @@ eventDispatchers:
         - add:
             body: Pull request merged!
       transition:
-        id: '51'
-    bodyTemplateRules: []
+        id: '0'
+    bodyTemplateRules:
+    - path: transition
+      property: config.jira.transitions.merge_request_merged
     headerTemplateRules:
     - headerName: Authorization
       property: config.jira.auth
@@ -283,5 +291,10 @@ config:
   jira:
     auth: jira-token
     host: example.atlassian.com
+    transitions:
+      take_in_progress: '21'
+      merge_request_ready: '31'
+      merge_request_become_wip: '111'
+      merge_request_merged: '51'
   gitlab:
     token: gitlab-token
