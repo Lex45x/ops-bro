@@ -36,7 +36,8 @@ This is done for contributors who don't want to wait until their changes appear 
 ## Environment variables
 
 Here is the list of supported environment variables:  
-* `JSON_FILE_URL` - is Http URL or filesystem path to JSON configuration file.  
+* `CONFIGURATION_FILE_URL` - is Http URL or filesystem path to JSON configuration file.  
+* `JSON_FILE_URL` - **deprecated**, use `CONFIGURATION_FILE_URL` instead.  
 This allows you to download the configuration from secured sources like [Amazon S3](https://aws.amazon.com/s3/) or put the file into the attached [docker volume](https://docs.docker.com/storage/volumes/).  
 **Notice** that if your HTTP resource requires authorization to download files, OpsBro can only be authorized using query string only!  
 * `LOG_LEVEL` - is [NLog Log level](https://github.com/NLog/NLog/wiki/Configuration-file#log-levels) string. If nothing is set - Info will be a default. Use the `Debug` level for configuration debugging.  
@@ -46,7 +47,7 @@ This allows you to download the configuration from secured sources like [Amazon 
 The command below will start OpsBro 0.3 container with the valid configuration from the repository. 
 
 ```sh
-docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/src/OpsBro.Api/g2j.json" -p 8080:80 opsbro/ops-bro:0.3
+docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/templates/gitlab2jira.yaml" -p 8080:80 opsbro/ops-bro:0.3.1
 ```
 
 After a successful image start, you can navigate to `localhost:8080` and see [Swagger Documentation](https://swagger.io/).
@@ -75,22 +76,37 @@ See generic flow on the image below.
 
 There is only one way to configure an application: via the JSON configuration file.
 This file represents a JSON object that looks like an example below.
+```yaml
+"$schema": https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json
+version: ''
+listeners: []
+eventDispatchers: []
+config: {}
+
+```
+
+<details>
+<summary>JSON Example</summary>
+
 ```json
 {
-    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3/src/OpsBro.Api/settings-schema.json"
+    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json",
     "version":"",
     "listeners":[],
     "eventDispatchers":[],
     "config":{}
 }
 ```
+
+</details>
+
 Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
 `config` is a JSON object that may hold [configuration](#config) values for the template.
 `version` used to maintain compatibility between the OpsBro version and configuration file version.
 `$schema` is the optional path to the configuration file schema of the stable OpsBro version. Used to simplify working with JSON editors.
 
 The example below will describe an integration between Gitlab webhooks and Jira transitions.  
-The original template can be found [HERE](/templates/gitlab2jira.json).
+The original template can be found [HERE](/templates/gitlab2jira.yaml).
 
 ## Recommended initial knowledge
 
@@ -121,7 +137,7 @@ Inside the request object there are three properties:
     "headers":{
         "key":"value"
     },
-	"unnest":{}
+    "unnest":{}
 }
 ```
 
@@ -149,18 +165,31 @@ If you need to have OpsBro working with different versions of the configuration 
 Each listener represents a source of incoming HTTP requests.  
 E.g., You want to build one-way integration between Gitlab and Jira. So, in this case, you **listen** to Gitlab events and change the state of the Jira issues accordingly. As a result, you will create a single Listener called gitlab.  
 See the example below.
+```yaml
+listeners:
+- name: gitlab
+  unnestingRules: []
+  extractors: []
+```
+<details>
+<summary>JSON Example</summary>
+
 ```json
 {
     "listeners":[
         {
             "name":"gitlab",
-			"unnestingRules":[],
+            "unnestingRules":[],
             "extractors":[]            
         }
     ],
     "eventDispatchers":[]
 }
 ```
+
+</details>
+
+
 `extractors` is a list of [Extractor](#extractor) that is described below.
 
 ### Unnesting rule
@@ -168,26 +197,42 @@ See the example below.
 This feature name was inspired by PL/pgSQL array funciton [unnest](https://www.postgresql.org/docs/9.1/functions-array.html).  
 Unnesting rules allows to process a single listener call as a sequence of listener calls.
 Unnest operation will be applied to [Request](#request) object.
+```yaml
+listeners:
+- name: gitlab
+  unnestingRules:
+  - type: PerRegexMatch
+    path: body.object_attributes.source_branch
+    pattern: "[A-Z]{1,10}-\\d{1,10}"
+    target: issue
+  extractors: []
+```
+
+<details>
+<summary>JSON Example</summary>
 
 ```json
 {
     "listeners":[
         {
             "name":"gitlab",
-			"unnestingRules": [
-			  {
-				"type": "PerRegexMatch",
-				"path": "body.object_attributes.source_branch",
-				"pattern": "[A-Z]{1,10}-\\d{1,10}",
-				"target": "issue"
-			  }
-			],
+            "unnestingRules": [
+              {
+                "type": "PerRegexMatch",
+                "path": "body.object_attributes.source_branch",
+                "pattern": "[A-Z]{1,10}-\\d{1,10}",
+                "target": "issue"
+              }
+            ],
             "extractors":[]            
         }
     ],
     "eventDispatchers":[]
 }
 ```
+
+</details>
+
 
 `"type": "PerRegexMatch"` - right now only one unnest type is allowed. It will unnest array of all macthes of regex in property specified via Path.  
 `path` - [JSON Path](https://restfulapi.net/json-jsonpath/) used to find json-token for matching.  
@@ -204,6 +249,34 @@ Each extractor represents a set of rules used to extract a single type of event 
 E.g., Gitlab listener acts as a source of different events: commit pushed, merge request created, merge request taken back in progress, merge request completed, merge request merged, and others. 
 So, in this case, each of the listed event types will have a dedicated extractor.
 See the example below.
+```yaml
+listeners:
+- name: gitlab
+  extractors:
+  - comment: Commits are pushed into branch
+    eventName: ''
+    extractionRules: []
+    validationRules: []
+  - comment: Merge request created
+    eventName: ''
+    extractionRules: []
+    validationRules: []
+  - comment: Merge request WIP status resolved
+    eventName: ''
+    extractionRules: []
+    validationRules: []
+  - comment: WIP status assigned to a Merge Request
+    eventName: ''
+    extractionRules: []
+    validationRules: []
+  - comment: Merge request merged
+    eventName: ''
+    extractionRules: []
+    validationRules: []
+```
+<details>
+<summary>JSON Example</summary>
+
 ```json
 {
     "listeners":[
@@ -239,13 +312,15 @@ See the example below.
                     "eventName":"",
                     "extractionRules":[],
                     "validationRules":[]
-                },
+                }
             ]            
         }
-    ],
-    "eventDispatchers":[]
+    ]
 }
 ```
+
+</details>
+
 
 `comment` is used to describe a specific action that happened on the Webhook creator side
 `eventName` is a name of an event that will be extracted from request to Listener.  
@@ -254,6 +329,18 @@ See the example below.
 
 ### Validation Rule
 Validation rule allows to validate [Request](#request) using [JSON Path](https://restfulapi.net/json-jsonpath/). Json-token that was retrieved via path will be compared to the expected value with the selected operator. See example below:
+```yaml
+validationRules:
+- path: headers.X-Gitlab-Token[0]
+  value: "{{token from webhook configuration}}"
+  operator: Equals
+- path: headers.X-Gitlab-Token[0]
+  configPath: gitlab.token
+  operator: Equals
+```
+<details>
+<summary>JSON Example</summary>
+
 ```json
 {
     "validationRules":[
@@ -270,6 +357,9 @@ Validation rule allows to validate [Request](#request) using [JSON Path](https:/
     ]
 }
 ```
+
+</details>
+
 
 `path` is json path in the [Request](#request)
 
@@ -288,6 +378,22 @@ Operators could be applied only to one JSON-token at a time - no validation acro
 
 Extraction rules allow specifying a way to compose the event from [Request](#request).
 [JSON Path](https://restfulapi.net/json-jsonpath/) used to find json-token for extraction as well. See example below:
+```yaml
+extractionRules:
+- type: FirstRegexMatch
+  pattern: "[A-Z]{1,10}-\\d{1,10}"
+  path: body.ref
+  property: issue
+- type: Copy
+  path: body.user_username
+  property: author
+- type: Copy
+  path: body.ref
+  property: ref
+```
+<details>
+<summary>JSON Example</summary>
+
 ```json
 {
     "extractionRules": [
@@ -311,6 +417,9 @@ Extraction rules allow specifying a way to compose the event from [Request](#req
 }
 ```
 
+</details>
+
+
 `path` is json path in the [request](#request).  
 `property` is the name of the event property to set. If the event already has value in the property then it will be replaced.  
 `type` determines the way to extract specific property:
@@ -319,6 +428,15 @@ Extraction rules allow specifying a way to compose the event from [Request](#req
 
 ## Event Dispatcher
 The Event dispatcher is responsible for dispatch an event with a specific name to its subscribers. See dispatcher configuration below:
+```yaml
+eventDispatchers:
+- eventName: ''
+  schema: {}
+  subscribers: []
+```
+<details>
+<summary>JSON Example</summary>
+
 ```json
 {
     "eventDispatchers": [
@@ -331,6 +449,9 @@ The Event dispatcher is responsible for dispatch an event with a specific name t
 }
 ```
 
+</details>
+
+
 `eventName` - the same name as used in [Extractor](#extractor).  
 `schema` - [JSON Schema](https://json-schema.org/) used to guarantee structure of the event.  
 `subscribers` - list of subscribers for the event represented by this dispatcher
@@ -338,7 +459,19 @@ The Event dispatcher is responsible for dispatch an event with a specific name t
 ## Event Subscriber
 The event subscriber converts an event to an HTTP call.  
 Each subscriber holds templates and rules for these templates.  
-See an example of event subscriber
+See an example of event subscriber.
+```yaml
+subscribers:
+- urlTemplate: https://example.com/{path}
+  method: POST
+  bodyTemplate: {}
+  bodyTemplateRules: []
+  headerTemplateRules: []
+  urlTemplateRules: []
+```
+<details>
+<summary>JSON Example</summary>
+
 ```json
 {
     "subscribers": [
@@ -354,12 +487,20 @@ See an example of event subscriber
 }
 ```
 
+</details>
+
 ### Template Rule
 The template rule describes how to fill event/config JSON-token into a predefined template.
 Template rules depend on the template type, and so there is a difference between them. See the types defined below.
 
 #### Url
 The template rule for the URL replaces substring in the template with the value found by Property.
+```yaml
+substring: "{ISSUE}"
+property: event.issue
+``` 
+<details>
+<summary>JSON Example</summary>
 
 ```json
 {
@@ -367,11 +508,22 @@ The template rule for the URL replaces substring in the template with the value 
     "property": "event.issue"
 }
 ``` 
+
+</details>
+
 `substring` - substring to replace in urlTemplate from subscriber.  
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
 
 #### Body
 The template rule for body replaces JSON token in the template with token found by the property path.
+
+```yaml
+path: fields.assignee.name
+property: event.author
+```
+
+<details>
+<summary>JSON Example</summary>
 
 ```json
 {
@@ -379,18 +531,24 @@ The template rule for body replaces JSON token in the template with token found 
     "property": "event.author"
 }
 ```
+
+</details>
+
 `path` - path inside the bodyTemplate.  
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
 
 #### Header
 The template rule for the header adds a header with a defined name to the HTTP headers collection.
 
-```json
-{
-    "headerName": "Authorization",
-    "property": "meta.auth_header"
-}
+<details>
+<summary>JSON Example</summary>
+
+```yaml
+headerName: Authorization
+property: meta.auth_header
 ```
+
+</details>
 
 `headerName` - name of the header to be added
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
@@ -399,6 +557,17 @@ The template rule for the header adds a header with a defined name to the HTTP h
 
 Config object created to improve the reusability of the templates.
 It can hold any value and may be imported into [validation rules](#validation-rule) as well as become a part of [Event Context](#event-context).
+
+```yaml
+config:
+  jira:
+    auth: jira-token
+  gitlab:
+    token: gitlab-token
+```
+
+<details>
+<summary>JSON Example</summary>
 
 ```json
 "config": {
@@ -409,6 +578,8 @@ It can hold any value and may be imported into [validation rules](#validation-ru
         "token": "gitlab-token"
     }
 ```
+
+</details>
 
 # Troubleshooting and debug
 
