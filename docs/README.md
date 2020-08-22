@@ -86,7 +86,7 @@ config: {}
 ```
 
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json",
@@ -96,7 +96,7 @@ config: {}
     "config":{}
 }
 ```
-<details/>
+</details>
 
 Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
 `config` is a JSON object that may hold [configuration](#config) values for the template.
@@ -170,7 +170,7 @@ listeners:
   extractors: []
 ```
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "listeners":[
@@ -183,7 +183,7 @@ listeners:
     "eventDispatchers":[]
 }
 ```
-<details/>
+</details>
 
 
 `extractors` is a list of [Extractor](#extractor) that is described below.
@@ -205,7 +205,7 @@ listeners:
 ```
 
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "listeners":[
@@ -225,7 +225,7 @@ listeners:
     "eventDispatchers":[]
 }
 ```
-<details/>
+</details>
 
 
 `"type": "PerRegexMatch"` - right now only one unnest type is allowed. It will unnest array of all macthes of regex in property specified via Path.  
@@ -269,7 +269,7 @@ listeners:
     validationRules: []
 ```
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "listeners":[
@@ -311,7 +311,7 @@ listeners:
     ]
 }
 ```
-<details/>
+</details>
 
 
 `comment` is used to describe a specific action that happened on the Webhook creator side
@@ -331,7 +331,7 @@ validationRules:
   operator: Equals
 ```
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "validationRules":[
@@ -348,7 +348,7 @@ validationRules:
     ]
 }
 ```
-<details/>
+</details>
 
 
 `path` is json path in the [Request](#request)
@@ -382,7 +382,7 @@ extractionRules:
   property: ref
 ```
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "extractionRules": [
@@ -405,7 +405,7 @@ extractionRules:
     ]
 }
 ```
-<details/>
+</details>
 
 
 `path` is json path in the [request](#request).  
@@ -423,7 +423,7 @@ eventDispatchers:
   subscribers: []
 ```
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "eventDispatchers": [
@@ -435,7 +435,7 @@ eventDispatchers:
     ]
 }
 ```
-<details/>
+</details>
 
 
 `eventName` - the same name as used in [Extractor](#extractor).  
@@ -456,7 +456,7 @@ subscribers:
   urlTemplateRules: []
 ```
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "subscribers": [
@@ -471,7 +471,7 @@ subscribers:
     ]
 }
 ```
-<details/>
+</details>
 
 ### Template Rule
 The template rule describes how to fill event/config JSON-token into a predefined template.
@@ -484,14 +484,14 @@ substring: "{ISSUE}"
 property: event.issue
 ``` 
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "substring": "{ISSUE}",
     "property": "event.issue"
 }
 ``` 
-<details/>
+</details>
 
 `substring` - substring to replace in urlTemplate from subscriber.  
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
@@ -505,14 +505,14 @@ property: event.author
 ```
 
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 {
     "path": "fields.assignee.name",
     "property": "event.author"
 }
 ```
-<details/>
+</details>
 
 `path` - path inside the bodyTemplate.  
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
@@ -521,12 +521,12 @@ property: event.author
 The template rule for the header adds a header with a defined name to the HTTP headers collection.
 
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```yaml
 headerName: Authorization
 property: meta.auth_header
 ```
-<details/>
+</details>
 
 `headerName` - name of the header to be added
 `property` - [JSON Path](https://restfulapi.net/json-jsonpath/) to the value inside [Event Context](#event-context)
@@ -545,7 +545,7 @@ config:
 ```
 
 <details>
-<summary>JSON Example<summary/>
+<summary>JSON Example</summary>
 ```json
 "config": {
     "jira": {
@@ -555,7 +555,7 @@ config:
         "token": "gitlab-token"
     }
 ```
-<details/>
+</details>
 
 # Troubleshooting and debug
 
