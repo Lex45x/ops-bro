@@ -87,6 +87,7 @@ config: {}
 
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json",
@@ -96,6 +97,7 @@ config: {}
     "config":{}
 }
 ```
+
 </details>
 
 Where the `listeners` is a collection of [Listeners](#listener) and `eventDispatchers` is a collection of [Event Dispathcer](#event-dispatchers).  
@@ -171,6 +173,7 @@ listeners:
 ```
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "listeners":[
@@ -183,6 +186,7 @@ listeners:
     "eventDispatchers":[]
 }
 ```
+
 </details>
 
 
@@ -206,6 +210,7 @@ listeners:
 
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "listeners":[
@@ -225,6 +230,7 @@ listeners:
     "eventDispatchers":[]
 }
 ```
+
 </details>
 
 
@@ -270,6 +276,7 @@ listeners:
 ```
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "listeners":[
@@ -311,6 +318,7 @@ listeners:
     ]
 }
 ```
+
 </details>
 
 
@@ -332,6 +340,7 @@ validationRules:
 ```
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "validationRules":[
@@ -348,6 +357,7 @@ validationRules:
     ]
 }
 ```
+
 </details>
 
 
@@ -383,6 +393,7 @@ extractionRules:
 ```
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "extractionRules": [
@@ -405,6 +416,7 @@ extractionRules:
     ]
 }
 ```
+
 </details>
 
 
@@ -424,6 +436,7 @@ eventDispatchers:
 ```
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "eventDispatchers": [
@@ -435,6 +448,7 @@ eventDispatchers:
     ]
 }
 ```
+
 </details>
 
 
@@ -457,6 +471,7 @@ subscribers:
 ```
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "subscribers": [
@@ -471,6 +486,7 @@ subscribers:
     ]
 }
 ```
+
 </details>
 
 ### Template Rule
@@ -485,12 +501,14 @@ property: event.issue
 ``` 
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "substring": "{ISSUE}",
     "property": "event.issue"
 }
 ``` 
+
 </details>
 
 `substring` - substring to replace in urlTemplate from subscriber.  
@@ -506,12 +524,14 @@ property: event.author
 
 <details>
 <summary>JSON Example</summary>
+
 ```json
 {
     "path": "fields.assignee.name",
     "property": "event.author"
 }
 ```
+
 </details>
 
 `path` - path inside the bodyTemplate.  
@@ -522,10 +542,12 @@ The template rule for the header adds a header with a defined name to the HTTP h
 
 <details>
 <summary>JSON Example</summary>
+
 ```yaml
 headerName: Authorization
 property: meta.auth_header
 ```
+
 </details>
 
 `headerName` - name of the header to be added
@@ -546,6 +568,7 @@ config:
 
 <details>
 <summary>JSON Example</summary>
+
 ```json
 "config": {
     "jira": {
@@ -555,6 +578,7 @@ config:
         "token": "gitlab-token"
     }
 ```
+
 </details>
 
 # Troubleshooting and debug
