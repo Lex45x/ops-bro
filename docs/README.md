@@ -137,7 +137,7 @@ Inside the request object there are three properties:
     "headers":{
         "key":"value"
     },
-	"unnest":{}
+    "unnest":{}
 }
 ```
 
@@ -179,7 +179,7 @@ listeners:
     "listeners":[
         {
             "name":"gitlab",
-			"unnestingRules":[],
+            "unnestingRules":[],
             "extractors":[]            
         }
     ],
@@ -216,14 +216,14 @@ listeners:
     "listeners":[
         {
             "name":"gitlab",
-			"unnestingRules": [
-			  {
-				"type": "PerRegexMatch",
-				"path": "body.object_attributes.source_branch",
-				"pattern": "[A-Z]{1,10}-\\d{1,10}",
-				"target": "issue"
-			  }
-			],
+            "unnestingRules": [
+              {
+                "type": "PerRegexMatch",
+                "path": "body.object_attributes.source_branch",
+                "pattern": "[A-Z]{1,10}-\\d{1,10}",
+                "target": "issue"
+              }
+            ],
             "extractors":[]            
         }
     ],
