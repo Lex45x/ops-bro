@@ -2,7 +2,7 @@
 using System.Net.Http;
 using Newtonsoft.Json;
 
-namespace OpsBro.Domain.Settings
+namespace OpsBro.Domain.Settings.JsonConverters
 {
     internal class HttpMethodStringConverter : JsonConverter
     {

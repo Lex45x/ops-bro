@@ -8,6 +8,11 @@
         /// <summary>
         /// Create new unnesting row for each regex entry in string token
         /// </summary>
-        PerRegexMatch = 1
+        PerRegexMatch = 1,
+
+        /// <summary>
+        /// Create new unnesting row for each array entry
+        /// </summary>
+        PerArrayEntry = 2
     }
 }

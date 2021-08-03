@@ -1,5 +1,5 @@
-"$schema": https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json
-version: v0.3
+"$schema": https://raw.githubusercontent.com/Lex45x/ops-bro/v0.4/src/OpsBro.Domain/settings-schema.json
+version: v0.4
 config:
   response:
     url: https://8a0f66f9e0d0034f8f231484e836079a.m.pipedream.net

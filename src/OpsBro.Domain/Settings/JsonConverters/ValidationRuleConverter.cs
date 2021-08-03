@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using OpsBro.Domain.Extraction.Validation;
+using OpsBro.Domain.Extraction.ValidationRules;
 
-namespace OpsBro.Domain.Settings
+namespace OpsBro.Domain.Settings.JsonConverters
 {
     public class ValidationRuleConverter : JsonConverter
     {

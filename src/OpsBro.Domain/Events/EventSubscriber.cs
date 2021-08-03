@@ -27,9 +27,9 @@ namespace OpsBro.Domain.Events
             UrlTemplate = urlTemplate ?? throw new ArgumentNullException(nameof(urlTemplate));
             Method = method ?? throw new ArgumentNullException(nameof(method));
             this.bodyTemplate = bodyTemplate ?? throw new ArgumentNullException(nameof(bodyTemplate));
-            BodyTemplateRules = bodyTemplateRules ?? throw new ArgumentNullException(nameof(bodyTemplateRules));
-            HeaderTemplateRules = headerTemplateRules ?? throw new ArgumentNullException(nameof(headerTemplateRules));
-            UrlTemplateRules = urlTemplateRules ?? throw new ArgumentNullException(nameof(urlTemplateRules));
+            BodyTemplateRules = bodyTemplateRules ?? new List<BodyTemplateRule>(capacity: 0);
+            HeaderTemplateRules = headerTemplateRules ?? new List<HeaderTemplateRule>(capacity: 0);
+            UrlTemplateRules = urlTemplateRules ?? new List<UrlTemplateRule>(capacity: 0);
         }
 
         /// <summary>

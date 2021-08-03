@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using OpsBro.Domain.Extraction.Rules;
+using OpsBro.Domain.Extraction.ExtractionRules;
 
 namespace OpsBro.Domain.Tests.Extraction.Rules
 {

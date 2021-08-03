@@ -11,16 +11,17 @@ using System.Threading.Tasks;
 
 namespace OpsBro.Api
 {
-
     public class Program
     {
         public static async Task Main(params string[] args)
         {
-            Logger logger = InitializeLogging();
-            
+            var logger = InitializeLogging();
+
             await ConfigureApplication(logger);
 
-            BuildWebHost(new string[0]).Run();
+            await BuildWebHost(args)
+                .RunAsync()
+                .ConfigureAwait(continueOnCapturedContext: false);
         }
 
         private static async Task ConfigureApplication(Logger logger)
@@ -40,22 +41,17 @@ namespace OpsBro.Api
         private static Logger InitializeLogging()
         {
             var config = new ConfigurationBuilder()
-                           .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-                           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                           .Build();
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                .Build();
 
             LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
 
             var logLevel = Environment.GetEnvironmentVariable("LOG_LEVEL");
 
-            if (logLevel == null)
-            {
-                LogManager.GlobalThreshold = NLog.LogLevel.Info;
-            }
-            else
-            {
-                LogManager.GlobalThreshold = NLog.LogLevel.FromString(logLevel);
-            }
+            LogManager.GlobalThreshold = logLevel == null 
+                ? NLog.LogLevel.Info 
+                : NLog.LogLevel.FromString(logLevel);
 
             var logger = LogManager.GetCurrentClassLogger();
 

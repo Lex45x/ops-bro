@@ -3,7 +3,7 @@ using System.ComponentModel;
 using FluentValidation;
 using Newtonsoft.Json.Linq;
 
-namespace OpsBro.Domain.Extraction.Validation
+namespace OpsBro.Domain.Extraction.ValidationRules
 {
     /// <summary>
     /// Represent a rule to validate JToken that may be found by <see cref="Path"/>

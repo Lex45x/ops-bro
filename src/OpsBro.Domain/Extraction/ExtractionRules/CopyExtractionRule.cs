@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace OpsBro.Domain.Extraction.Rules
+namespace OpsBro.Domain.Extraction.ExtractionRules
 {
     /// <summary>
     /// Extraction rule of <see cref="ExtractionType.Copy"/> type.

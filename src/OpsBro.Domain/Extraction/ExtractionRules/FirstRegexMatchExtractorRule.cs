@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
-namespace OpsBro.Domain.Extraction.Rules
+namespace OpsBro.Domain.Extraction.ExtractionRules
 {
     /// <summary>
     /// Represent extractor of <see cref="ExtractionType.FirstRegexMatch"/> type.

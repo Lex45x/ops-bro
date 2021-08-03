@@ -7,9 +7,9 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction;
-using OpsBro.Domain.Extraction.Rules;
+using OpsBro.Domain.Extraction.ExtractionRules;
 using OpsBro.Domain.Extraction.UnnestingRules;
-using OpsBro.Domain.Extraction.Validation;
+using OpsBro.Domain.Extraction.ValidationRules;
 
 namespace OpsBro.Domain.Tests.Extraction
 {

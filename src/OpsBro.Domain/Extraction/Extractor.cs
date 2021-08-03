@@ -7,8 +7,8 @@ using FluentValidation;
 using Newtonsoft.Json.Linq;
 using NLog;
 using OpsBro.Domain.Events;
-using OpsBro.Domain.Extraction.Rules;
-using OpsBro.Domain.Extraction.Validation;
+using OpsBro.Domain.Extraction.ExtractionRules;
+using OpsBro.Domain.Extraction.ValidationRules;
 
 namespace OpsBro.Domain.Extraction
 {

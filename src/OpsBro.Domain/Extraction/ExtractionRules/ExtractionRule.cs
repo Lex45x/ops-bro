@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 
-namespace OpsBro.Domain.Extraction.Rules
+namespace OpsBro.Domain.Extraction.ExtractionRules
 {
     /// <summary>
     ///  Base class for all extraction rules

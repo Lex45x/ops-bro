@@ -11,7 +11,8 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NLog;
-using OpsBro.Domain.Extraction.Validation;
+using OpsBro.Domain.Extraction.ValidationRules;
+using OpsBro.Domain.Settings.JsonConverters;
 using YamlDotNet.Serialization;
 
 namespace OpsBro.Domain.Settings
@@ -33,13 +34,13 @@ namespace OpsBro.Domain.Settings
                 }
             }
 
-            logger.Info("Configuraiton file url: {url}", configurationFileUrl);
+            logger.Info("Configuration file url: {url}", configurationFileUrl);
 
             string configuration;
 
             if (File.Exists(configurationFileUrl))
             {
-                configuration = File.ReadAllText(configurationFileUrl, Encoding.UTF8);
+                configuration = await File.ReadAllTextAsync(configurationFileUrl, Encoding.UTF8);
                 logger.Info("Configuration file found and loaded!");
             }
             else
@@ -49,7 +50,7 @@ namespace OpsBro.Domain.Settings
                 logger.Info("Configuration file downloaded!");
             }
 
-            logger.Debug("Configuraiton file content: {configuration}", configuration);
+            logger.Debug("Configuration file content: {configuration}", configuration);
 
             var configurationFileExtension = configurationFileUrl.Split('.').Last();
 
@@ -107,7 +108,9 @@ namespace OpsBro.Domain.Settings
                 new ExtractionRuleConverter(),
                 new StringEnumConverter(),
                 new HttpMethodStringConverter(),
-                new ValidationRuleConverter()
+                new ValidationRuleConverter(),
+                new BodyTemplateRuleConverter(),
+                new UnnestingRuleConverter()
             },
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };

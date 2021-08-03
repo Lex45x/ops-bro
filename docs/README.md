@@ -2,29 +2,29 @@
 
 - [Documentation Index](#documentation-index)
 - [Get Started with Docker Image](#get-started-with-docker-image)
-  * [Environment variables](#environment-variables)
-  * [Example](#example)
+  - [Environment variables](#environment-variables)
+  - [Example](#example)
 - [Concept](#concept)
 - [Understanding the Configuration](#understanding-the-configuration)
-  * [Recommended initial knowledge](#recommended-initial-knowledge)
-  * [Types](#types)
-    + [Request](#request)
-    + [Event Context](#event-context)
-  * [Versioning](#versioning)
-  * [Listener](#listener)
-    + [Unnesting rule](#unnesting-rule)
-  * [Extractor](#extractor)
-    + [Validation Rule](#validation-rule)
-    + [Extraction Rule](#extraction-rule)
-  * [Event Dispatcher](#event-dispatcher)
-  * [Event Subscriber](#event-subscriber)
-    + [Template Rule](#template-rule)
+  - [Recommended initial knowledge](#recommended-initial-knowledge)
+  - [Types](#types)
+    - [Request](#request)
+    - [Event Context](#event-context)
+  - [Versioning](#versioning)
+  - [Listener](#listener)
+    - [Unnesting rule](#unnesting-rule)
+  - [Extractor](#extractor)
+    - [Validation Rule](#validation-rule)
+    - [Extraction Rule](#extraction-rule)
+  - [Event Dispatcher](#event-dispatcher)
+  - [Event Subscriber](#event-subscriber)
+    - [Template Rule](#template-rule)
       - [Url](#url)
       - [Body](#body)
       - [Header](#header)
-  * [Config](#config)
+  - [Config](#config)
 - [Troubleshooting and debug](#troubleshooting-and-debug)
-  * [Prometheus and metrics](#prometheus-and-metrics)
+  - [Prometheus and metrics](#prometheus-and-metrics)
 
 # Get Started with Docker Image
 
@@ -47,7 +47,7 @@ This allows you to download the configuration from secured sources like [Amazon 
 The command below will start OpsBro 0.3 container with the valid configuration from the repository. 
 
 ```sh
-docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/templates/gitlab2jira.yaml" -p 8080:80 opsbro/ops-bro:0.3.1
+docker run -d --rm -e "JSON_FILE_URL=https://raw.githubusercontent.com/Lex45x/ops-bro/v0.4/templates/gitlab2jira.yaml" -p 8080:80 opsbro/ops-bro:0.4
 ```
 
 After a successful image start, you can navigate to `localhost:8080` and see [Swagger Documentation](https://swagger.io/).
@@ -77,7 +77,7 @@ See generic flow on the image below.
 There is only one way to configure an application: via the JSON configuration file.
 This file represents a JSON object that looks like an example below.
 ```yaml
-"$schema": https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json
+"$schema": https://raw.githubusercontent.com/Lex45x/ops-bro/v0.4/src/OpsBro.Domain/settings-schema.json
 version: ''
 listeners: []
 eventDispatchers: []
@@ -90,7 +90,7 @@ config: {}
 
 ```json
 {
-    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.3.1/src/OpsBro.Domain/settings-schema.json",
+    "$schema":"https://raw.githubusercontent.com/Lex45x/ops-bro/v0.4/src/OpsBro.Domain/settings-schema.json",
     "version":"",
     "listeners":[],
     "eventDispatchers":[],

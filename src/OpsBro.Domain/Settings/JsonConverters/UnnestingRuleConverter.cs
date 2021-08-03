@@ -1,11 +1,11 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpsBro.Domain.Extraction.ExtractionRules;
+using OpsBro.Domain.Extraction.UnnestingRules;
 
 namespace OpsBro.Domain.Settings.JsonConverters
 {
-    public class ExtractionRuleConverter : JsonConverter
+    public class UnnestingRuleConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
@@ -16,19 +16,19 @@ namespace OpsBro.Domain.Settings.JsonConverters
             JsonSerializer serializer)
         {
             var rule = JObject.Load(reader);
-            var extractionType = rule["type"].ToObject<ExtractionType>();
+            var extractionType = rule["type"].ToObject<UnnestingRuleType>();
 
             return extractionType switch
             {
-                ExtractionType.Copy => rule.ToObject<CopyExtractionRule>(serializer),
-                ExtractionType.FirstRegexMatch => rule.ToObject<FirstRegexMatchExtractorRule>(serializer),
+                UnnestingRuleType.PerRegexMatch => rule.ToObject<UnnestingPerRegexMatchRule>(serializer),
+                UnnestingRuleType.PerArrayEntry => rule.ToObject<UnnestingPerArrayEntryRule>(serializer),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(ExtractionRule);
+            return objectType == typeof(UnnestingRule);
         }
 
         public override bool CanWrite => false;

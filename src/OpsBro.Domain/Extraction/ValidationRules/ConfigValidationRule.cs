@@ -2,7 +2,7 @@
 using FluentValidation;
 using Newtonsoft.Json.Linq;
 
-namespace OpsBro.Domain.Extraction.Validation
+namespace OpsBro.Domain.Extraction.ValidationRules
 {
     /// <summary>
     /// Validation rule that will compare JToken found by <see cref="ValidationRule.Path"/> with JToken found in Config object with <see cref="ConfigPath"/>

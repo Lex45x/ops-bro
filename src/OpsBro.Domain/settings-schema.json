@@ -61,10 +61,7 @@
               "required": [
                 "urlTemplate",
                 "method",
-                "bodyTemplate",
-                "bodyTemplateRules",
-                "headerTemplateRules",
-                "urlTemplateRules"
+                "bodyTemplate"
               ],
               "properties": {
                 "urlTemplate": {
@@ -109,6 +106,11 @@
                       "property": {
                         "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items/property",
                         "title": "Property",
+                        "type": "string"
+                      },
+                      "substring": {
+                        "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items/substring",
+                        "title": "Substring",
                         "type": "string"
                       }
                     }
@@ -209,7 +211,6 @@
               "required": [
                 "type",
                 "path",
-                "pattern",
                 "target"
               ],
               "properties": {
@@ -217,7 +218,7 @@
                   "$id": "#root/listeners/items/unnestingRules/perRegexMatch/items/type",
                   "title": "Type",
                   "type": "string",
-                  "enum": [ "PerRegexMatch" ]
+                  "enum": [ "PerRegexMatch", "PerArrayEntry" ]
                 },
                 "path": {
                   "$id": "#root/listeners/items/unnestingRules/perRegexMatch/items/path",

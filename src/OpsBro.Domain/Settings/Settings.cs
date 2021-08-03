@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using NLog;
 using OpsBro.Domain.Events;
 using OpsBro.Domain.Extraction;
-using OpsBro.Domain.Extraction.Validation;
 
 namespace OpsBro.Domain.Settings
 {
@@ -19,7 +17,7 @@ namespace OpsBro.Domain.Settings
 
             if (version != Version)
             {
-                throw new InvalidOperationException($"Settings version missmatch! Expected: {Version}, actual: {version}");
+                throw new InvalidOperationException($"Settings version mismatch! Expected: {Version}, actual: {version}");
             }
 
             ListenersByListenerName = listeners.ToDictionary(listener => listener.Name);
@@ -31,7 +29,7 @@ namespace OpsBro.Domain.Settings
         public IDictionary<string, EventDispatcher> EventDispatcherByEventName { get; }
         public JObject Config { get; }
 
-        public static readonly string Version = "v0.3.1";
+        public static readonly string Version = "v0.4";
     }
 
 }
