@@ -75,7 +75,7 @@ namespace OpsBro.Domain.Settings
                 case "json":
                     break;
                 default:
-                    throw new InvalidOperationException("Unsupported configuraiton file extension! Only .json and .yaml supported.");
+                    throw new InvalidOperationException("Unsupported configuration file extension! Only .json and .yaml supported.");
             }
 
             var configurationObject = JObject.Parse(configuration);
@@ -84,7 +84,6 @@ namespace OpsBro.Domain.Settings
             configurationObject.Validate(schema);
 
             var settings = configurationObject.ToObject<Settings>(JsonSerializer.Create(serializerSettings));
-            ConfigValidationRule.Config = settings.Config;
 
             logger.Info("Settings object deserialized!");
 
@@ -109,7 +108,6 @@ namespace OpsBro.Domain.Settings
                 new StringEnumConverter(),
                 new HttpMethodStringConverter(),
                 new ValidationRuleConverter(),
-                new BodyTemplateRuleConverter(),
                 new UnnestingRuleConverter()
             },
             PreserveReferencesHandling = PreserveReferencesHandling.Objects

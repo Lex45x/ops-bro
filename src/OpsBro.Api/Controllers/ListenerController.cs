@@ -49,7 +49,8 @@ namespace OpsBro.Api.Controllers
             {
                 ["query"] = JToken.FromObject(Request.Query.ToDictionary(entry => entry.Key, entry => entry.Value)),
                 ["body"] = body,
-                ["headers"] = JToken.FromObject(Request.Headers)
+                ["headers"] = JToken.FromObject(Request.Headers),
+                ["config"] = settings.Config
             };
 
             foreach (var @event in listener.ExtractAll(payload))

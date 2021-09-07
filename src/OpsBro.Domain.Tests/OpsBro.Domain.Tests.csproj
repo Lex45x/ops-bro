@@ -22,4 +22,8 @@
     <ProjectReference Include="..\OpsBro.Domain\OpsBro.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Events\Templates\" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,73 @@
+---
+version: v0.4
+config:
+  telegram:
+    botToken: token
+    chatId: 0
+  alertmanager:
+    token: token
+listeners:
+- name: alermanager
+  unnestingRules: 
+  - type: PerArrayEntry
+    path: body.alerts
+    target: alert
+  extractors:
+  - comment: all alerts are extracted here
+    eventName: alert
+    validationRules:
+    - path: headers.Authorization[0]
+      configPath: alertmanager.token
+      operator: Equals
+    extractionRules:
+    - type: Copy
+      path: unnest.alert.labels.severity      
+      property: severity
+    - type: Copy
+      path: unnest.alert.annotations.summary      
+      property: summary
+    - type: Copy
+      path: unnest.alert.status    
+      property: status    
+eventDispatchers:
+- eventName: alert
+  schema: 
+    "$id": events/alert
+    type: object
+    properties:
+      status:
+        "$id": "/properties/status"
+        type: string
+        title: TheStatusSchema
+        default: ''
+        examples:
+        - resolved
+        - firing
+      severity:
+        "$id": "/properties/severity"
+        type: string
+        title: TheSeveritySchema
+        default: ''
+        examples:
+        - critical
+      summary:
+        "$id": "/properties/summary"
+        type: string
+        title: TheSummarySchema
+        default: ''
+        examples:
+        - Descritpion of alert
+    required:
+    - status
+    - severity
+    - summary
+  subscribers:
+  - urlTemplate: https://api.telegram.org/bot{config.telegram.botToken}/sendMessage
+    method: POST
+    bodyTemplate: |
+      {
+        parse_mode: "Markdown"
+        chat_id: "{config.telegram.chatId}"
+        text: "{event.severity} alert is {event.status}. {event.summary}"
+      }
+      

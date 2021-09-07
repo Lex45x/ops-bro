@@ -23,9 +23,9 @@ namespace OpsBro.Domain.Settings.JsonConverters
                 ruleType = typeof(ValueValidationRule);
             }
 
-            if (rule.ContainsKey("configPath"))
+            if (rule.ContainsKey("withPath"))
             {
-                ruleType = typeof(ConfigValidationRule);
+                ruleType = typeof(CompareValidationRule);
             }
 
             if (ruleType == null)

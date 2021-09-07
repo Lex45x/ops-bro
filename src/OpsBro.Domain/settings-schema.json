@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "root",
-  "title": "Configuraiton object",
+  "title": "Configuration object",
   "type": "object",
   "required": [
     "version",
@@ -81,48 +81,15 @@
                 "bodyTemplate": {
                   "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplate",
                   "title": "BodyTemplate",
-                  "type": "object",
-                  "additionalProperties": true
+                  "type": "string"
                 },
-                "bodyTemplateRules": {
-                  "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules",
-                  "title": "Bodytemplaterules",
+                "httpHeaders": {
+                  "$id": "#root/eventDispatchers/items/subscribers/items/httpHeaders",
+                  "title": "HttpHeaders",
                   "type": "array",
                   "default": [],
                   "items": {
-                    "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items",
-                    "title": "Items",
-                    "type": "object",
-                    "required": [
-                      "path",
-                      "property"
-                    ],
-                    "properties": {
-                      "path": {
-                        "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items/path",
-                        "title": "Path",
-                        "type": "string"
-                      },
-                      "property": {
-                        "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items/property",
-                        "title": "Property",
-                        "type": "string"
-                      },
-                      "substring": {
-                        "$id": "#root/eventDispatchers/items/subscribers/items/bodyTemplateRules/items/substring",
-                        "title": "Substring",
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                "headerTemplateRules": {
-                  "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules",
-                  "title": "Headertemplaterules",
-                  "type": "array",
-                  "default": [],
-                  "items": {
-                    "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules/items",
+                    "$id": "#root/eventDispatchers/items/subscribers/items/httpHeaders/items",
                     "title": "Items",
                     "type": "object",
                     "required": [
@@ -131,40 +98,12 @@
                     ],
                     "properties": {
                       "headerName": {
-                        "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules/items/headerName",
-                        "title": "HeaderName",
+                        "$id": "#root/eventDispatchers/items/subscribers/items/httpHeaders/items/name",
+                        "title": "Name",
                         "type": "string"
                       },
                       "property": {
-                        "$id": "#root/eventDispatchers/items/subscribers/items/headerTemplateRules/items/property",
-                        "title": "Property",
-                        "type": "string"
-                      }
-                    }
-                  }
-
-                },
-                "urlTemplateRules": {
-                  "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules",
-                  "title": "UrlTemplateRules",
-                  "type": "array",
-                  "default": [],
-                  "items": {
-                    "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules/items",
-                    "title": "Items",
-                    "type": "object",
-                    "required": [
-                      "substring",
-                      "property"
-                    ],
-                    "properties": {
-                      "substring": {
-                        "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules/items/substring",
-                        "title": "Substring",
-                        "type": "string"
-                      },
-                      "property": {
-                        "$id": "#root/eventDispatchers/items/subscribers/items/urlTemplateRules/items/property",
+                        "$id": "#root/eventDispatchers/items/subscribers/items/httpHeaders/items/property",
                         "title": "Property",
                         "type": "string"
                       }
@@ -367,12 +306,12 @@
                         }
                       },
                       {
-                        "$id": "#root/listeners/items/extractors/items/validationRules/fromConfigRule",
+                        "$id": "#root/listeners/items/extractors/items/validationRules/compareRule",
                         "title": "Items",
                         "type": "object",
                         "required": [
                           "path",
-                          "configPath",
+                          "withPath",
                           "operator"
                         ],
                         "properties": {
@@ -382,8 +321,8 @@
                             "type": "string"
                           },
                           "configPath": {
-                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromConfigRule/configPath",
-                            "title": "Configpath",
+                            "$id": "#root/listeners/items/extractors/items/validationRules/items/fromConfigRule/withPath",
+                            "title": "WithPath",
                             "type": "string"
                           },
                           "operator": {

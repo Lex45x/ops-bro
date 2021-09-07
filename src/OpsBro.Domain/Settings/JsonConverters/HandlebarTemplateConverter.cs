@@ -2,11 +2,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpsBro.Domain.Events.Templates;
-using OpsBro.Domain.Extraction.ExtractionRules;
 
 namespace OpsBro.Domain.Settings.JsonConverters
 {
-    public class BodyTemplateRuleConverter : JsonConverter
+    public class HandlebarTemplateConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
@@ -16,17 +15,16 @@ namespace OpsBro.Domain.Settings.JsonConverters
         public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
             JsonSerializer serializer)
         {
-            var rule = JObject.Load(reader);
-            var substringSpecification = rule["substring"];
+            var template = JToken.Load(reader);
 
-            return substringSpecification == null 
-                ? (BodyTemplateRule) rule.ToObject<BodyTokenTemplateRule>(serializer) 
-                : rule.ToObject<BodySubstringTemplateRule>(serializer);
+            return template.Type == JTokenType.String
+                ? new HandlebarTemplate(template.ToObject<string>())
+                : null;
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(BodyTemplateRule);
+            return objectType == typeof(HandlebarTemplate);
         }
 
         public override bool CanWrite => false;

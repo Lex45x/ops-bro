@@ -8,6 +8,7 @@ using NLog.Web;
 using OpsBro.Domain.Settings;
 using System;
 using System.Threading.Tasks;
+using ILogger = NLog.ILogger;
 
 namespace OpsBro.Api
 {
@@ -24,7 +25,7 @@ namespace OpsBro.Api
                 .ConfigureAwait(continueOnCapturedContext: false);
         }
 
-        private static async Task ConfigureApplication(Logger logger)
+        private static async Task ConfigureApplication(ILogger logger)
         {
             try
             {

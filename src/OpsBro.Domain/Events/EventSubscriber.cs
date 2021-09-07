@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -17,25 +15,20 @@ namespace OpsBro.Domain.Events
     public class EventSubscriber
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        private readonly JObject bodyTemplate;
 
-        public EventSubscriber(string urlTemplate, HttpMethod method, JObject bodyTemplate,
-            ICollection<BodyTemplateRule> bodyTemplateRules,
-            ICollection<HeaderTemplateRule> headerTemplateRules,
-            ICollection<UrlTemplateRule> urlTemplateRules)
+        public EventSubscriber(HandlebarTemplate urlTemplate, HttpMethod method, HandlebarTemplate bodyTemplate,
+            ICollection<HttpHeader> headers)
         {
             UrlTemplate = urlTemplate ?? throw new ArgumentNullException(nameof(urlTemplate));
             Method = method ?? throw new ArgumentNullException(nameof(method));
-            this.bodyTemplate = bodyTemplate ?? throw new ArgumentNullException(nameof(bodyTemplate));
-            BodyTemplateRules = bodyTemplateRules ?? new List<BodyTemplateRule>(capacity: 0);
-            HeaderTemplateRules = headerTemplateRules ?? new List<HeaderTemplateRule>(capacity: 0);
-            UrlTemplateRules = urlTemplateRules ?? new List<UrlTemplateRule>(capacity: 0);
+            BodyTemplate = bodyTemplate ?? throw new ArgumentNullException(nameof(bodyTemplate));
+            Headers = headers ?? new List<HttpHeader>(capacity: 0);
         }
 
         /// <summary>
         /// Template sting for the url
         /// </summary>
-        public string UrlTemplate { get; }
+        public HandlebarTemplate UrlTemplate { get; }
 
         /// <summary>
         /// Http method to be called
@@ -45,22 +38,12 @@ namespace OpsBro.Domain.Events
         /// <summary>
         /// Template of the body
         /// </summary>
-        public JObject BodyTemplate => bodyTemplate.DeepClone() as JObject;
-
-        /// <summary>
-        /// Set of rules to extract data from event/config and apply it to body template
-        /// </summary>
-        public ICollection<BodyTemplateRule> BodyTemplateRules { get; }
+        public HandlebarTemplate BodyTemplate { get; }
 
         /// <summary>
         /// Set of rules to extract model from event/config and apply it to headers template
         /// </summary>
-        public ICollection<HeaderTemplateRule> HeaderTemplateRules { get; }
-
-        /// <summary>
-        /// Set of rules to extract model from event/config and apply it to headers template
-        /// </summary>
-        public ICollection<UrlTemplateRule> UrlTemplateRules { get; }
+        public ICollection<HttpHeader> Headers { get; }
 
         /// <summary>
         /// Fill template with model from event and send http request.
@@ -81,24 +64,20 @@ namespace OpsBro.Domain.Events
                 ["config"] = config
             };
 
-            var url = UrlTemplateRules.Aggregate(UrlTemplate,
-                (current, urlTemplateRule) => urlTemplateRule.Apply(current, model));
-
+            var url = UrlTemplate.Build(model);
             logger.Debug("Url template filled: {url}", url);
 
-            var body = BodyTemplateRules.Aggregate(BodyTemplate,
-                (current, bodyTemplateRule) => bodyTemplateRule.Apply(current, model));
-
+            var body = BodyTemplate.Build(model);
             logger.Debug("Body template filled: {body}", body);
 
             var httpRequestMessage = new HttpRequestMessage
             {
                 Method = Method,
-                Content = new StringContent(body.ToString(), Encoding.UTF8, "application/json"),
+                Content = new StringContent(body, Encoding.UTF8, "application/json"),
                 RequestUri = new Uri(url)
             };
 
-            foreach (var headerTemplateRule in HeaderTemplateRules)
+            foreach (var headerTemplateRule in Headers)
             {
                 headerTemplateRule.Apply(httpRequestMessage.Headers, model);
             }
@@ -106,7 +85,6 @@ namespace OpsBro.Domain.Events
             logger.Debug("Headers template filled: {header}", httpRequestMessage.Headers);
 
             using var httpClient = new HttpClient();
-
             var responseMessage =
                 await httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
 
@@ -114,7 +92,7 @@ namespace OpsBro.Domain.Events
             {
                 var content = await responseMessage.Content.ReadAsStringAsync();
                 logger.Debug("Http request sent! Response: {content}", content);
-            }            
+            }
 
             responseMessage.EnsureSuccessStatusCode();
         }

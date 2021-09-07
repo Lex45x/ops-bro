@@ -47,15 +47,22 @@ namespace OpsBro.Domain.Tests.Events
         [Test]
         public void Dispatch_InvalidSchema()
         {
+            var subscriberMock = CreateEventSubscriberMock();
+
             var eventDispatcher = new EventDispatcher(EventName,
-                JSchema.Parse("{\"required\":[\"required_property\"] }"), new List<EventSubscriber>());
+                JSchema.Parse("{\"required\":[\"required_property\"] }"), new List<EventSubscriber>
+                {
+                    subscriberMock.Object
+                });
 
             var @event = new Event(EventName, new JObject
             {
                 ["property"] = "value"
             });
 
-            Assert.ThrowsAsync<JSchemaValidationException>(() => eventDispatcher.Dispatch(@event, EmptyJObject));
+            Assert.DoesNotThrowAsync(() => eventDispatcher.Dispatch(@event, EmptyJObject));
+
+            subscriberMock.Verify(subscriber => subscriber.Handle(It.IsAny<Event>(), It.IsAny<JObject>()), Times.Never);
         }
 
         [Test]
@@ -81,12 +88,10 @@ namespace OpsBro.Domain.Tests.Events
 
         private static Mock<EventSubscriber> CreateEventSubscriberMock()
         {
-            return new Mock<EventSubscriber>("", 
-                HttpMethod.Post, 
-                new JObject(),
-                new List<BodyTemplateRule>(),
-                new List<HeaderTemplateRule>(),
-                new List<UrlTemplateRule>());
+            return new Mock<EventSubscriber>(new HandlebarTemplate(""), 
+                HttpMethod.Post,
+                new HandlebarTemplate("{}"),
+                new List<HttpHeader>());
         }
     }
 }

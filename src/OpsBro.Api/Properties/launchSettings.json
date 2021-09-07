@@ -12,7 +12,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "CONFIGURATION_FILE_URL": "config-example.yaml",
+        "CONFIGURATION_FILE_URL": "C:\\Users\\redka\\Documents\\ops-bro\\templates\\prometheus2telegram.yaml",
         "LOG_LEVEL": "Debug"
       }
     }

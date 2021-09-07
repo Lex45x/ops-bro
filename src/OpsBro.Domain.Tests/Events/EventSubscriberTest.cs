@@ -11,12 +11,10 @@ namespace OpsBro.Domain.Tests.Events
     [TestFixture(Author = "lex45x", Category = "Unit,Domain", TestOf = typeof(EventSubscriber))]
     public class EventSubscriberTest
     {
-        private static readonly EventSubscriber DefaultEventSubscriber = new EventSubscriber("",
+        private static readonly EventSubscriber defaultEventSubscriber = new EventSubscriber("",
             HttpMethod.Post,
-            new JObject(),
-            new List<BodyTemplateRule>(),
-            new List<HeaderTemplateRule>(),
-            new List<UrlTemplateRule>());
+            "",
+            new List<HttpHeader>());
 
         [Test]
         public void Constructor_ArgumentValidation()
@@ -24,56 +22,26 @@ namespace OpsBro.Domain.Tests.Events
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber(urlTemplate: null,
                     HttpMethod.Post,
-                    new JObject(),
-                    new List<BodyTemplateRule>(),
-                    new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>()));
+                    "{}",
+                    new List<HttpHeader>()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
                     method: null,
-                    new JObject(),
-                    new List<BodyTemplateRule>(),
-                    new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>()));
+                    "{}",
+                    new List<HttpHeader>()));
 
             Assert.Throws<ArgumentNullException>(() =>
                 new EventSubscriber("",
                     HttpMethod.Post,
                     null,
-                    new List<BodyTemplateRule>(),
-                    new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>()));
-
-            Assert.Throws<ArgumentNullException>(() =>
-                new EventSubscriber("",
-                    HttpMethod.Post,
-                    new JObject(),
-                    null,
-                    new List<HeaderTemplateRule>(),
-                    new List<UrlTemplateRule>()));
-
-            Assert.Throws<ArgumentNullException>(() =>
-                new EventSubscriber("",
-                    HttpMethod.Post,
-                    new JObject(),
-                    new List<BodyTemplateRule>(),
-                    null,
-                    new List<UrlTemplateRule>()));
-
-            Assert.Throws<ArgumentNullException>(() =>
-                new EventSubscriber("",
-                    HttpMethod.Post,
-                    new JObject(),
-                    new List<BodyTemplateRule>(),
-                    new List<HeaderTemplateRule>(),
-                    null));
+                    new List<HttpHeader>()));
         }
 
         [Test]
         public void Dispatch_ArgumentValidation()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(() => DefaultEventSubscriber.Handle(null, new JObject()));
+            Assert.ThrowsAsync<ArgumentNullException>(() => defaultEventSubscriber.Handle(null, new JObject()));
         }
     }
 }
