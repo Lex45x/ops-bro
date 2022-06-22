@@ -21,7 +21,7 @@
     <PackageReference Include="abioc" Version="0.8.0" />
     <PackageReference Include="FluentValidation" Version="9.0.1" />
     <PackageReference Include="Handlebars.Net" Version="2.0.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.13" />
     <PackageReference Include="NLog" Version="4.7.3" />
     <PackageReference Include="prometheus-net" Version="3.6.0" />
